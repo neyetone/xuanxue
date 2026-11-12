@@ -1459,10 +1459,38 @@
         fallbackCopyTextToClipboard(text);
     }
     function fallbackCopyTextToClipboard(text) {
+        // 优先使用现代 Clipboard API（不会弹出带网址的系统原生框）
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function() {
+                showToast('✅ 已成功複製到剪貼簿');
+            }).catch(function() {
+                legacyCopy(text);
+            });
+        } else {
+            legacyCopy(text);
+        }
+    }
+
+    function legacyCopy(text) {
         var textArea = document.createElement("textarea");
-        textArea.value = text; textArea.style.position = "fixed"; document.body.appendChild(textArea);
-        textArea.focus(); textArea.select();
-        try { document.execCommand('copy'); alert("✅ 已複製"); } catch (err) { alert("❌ 複製失敗"); }
+        textArea.value = text;
+        // 隐藏 textarea，避免页面滚动或闪烁
+        textArea.style.position = "fixed";
+        textArea.style.top = "-9999px";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            var successful = document.execCommand('copy');
+            if (successful) {
+                showToast('✅ 已成功複製到剪貼簿');
+            } else {
+                showToast('❌ 複製失敗，請手動選取文字複製');
+            }
+        } catch (err) {
+            showToast('❌ 複製失敗，請手動選取文字複製');
+        }
         document.body.removeChild(textArea);
     }
 
