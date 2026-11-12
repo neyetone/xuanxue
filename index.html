@@ -3,332 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>數字玄學特別號殺號 v15.0 (賽博旗艦版)</title>
+    <title>數字玄學四五不中 v14.6</title>
     <style>
         :root {
-            /* 科技感配色 */
-            --bg-dark: #0a0f1c;
-            --bg-panel: rgba(16, 25, 43, 0.75);
-            --border-glow: rgba(0, 243, 255, 0.3);
-            --primary-neon: #00f3ff;
-            --secondary-neon: #9d4edd;
-            --danger-neon: #ff003c;
-            --warning-neon: #ffb703;
-            --success-neon: #00ff88;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --cell-bg: #1e293b;
-            --cell-active: #334155;
+            --primary-color: #1a73e8;
+            --danger-color: #e53935;
+            --warning-color: #f9a825;
+            --success-color: #43a047;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --border-radius: 12px;
+            --blue-zone: #80deea;
+            --blue-text: #006064;
         }
-
         html { scroll-behavior: smooth; }
-        body { 
-            font-family: 'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif; 
-            background-color: var(--bg-dark); 
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 85% 30%, rgba(157, 78, 221, 0.05) 0%, transparent 50%);
-            background-attachment: fixed;
-            margin: 0; 
-            padding: 15px; 
-            padding-bottom: 90px; 
-            color: var(--text-main); 
-            -webkit-font-smoothing: antialiased;
-        }
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; padding-bottom: 80px; color: var(--text-main); }
         .app-container { max-width: 1200px; margin: 0 auto; }
-        
-        /* 玻璃擬態面板 */
-        .panel { 
-            background: var(--bg-panel); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05); 
-            margin-bottom: 25px; 
-            border: 1px solid var(--border-glow);
-        }
+        .panel { background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { text-align: center; color: #2c3e50; margin-top: 0; font-size: 22px; }
+        h3 { color: var(--primary-color); border-bottom: 2px solid #eef2f5; padding-bottom: 10px; margin-top: 0; font-size: 16px; display: flex; align-items: center; gap: 8px;}
 
-        h2 { 
-            text-align: center; 
-            color: #fff; 
-            margin-top: 0; 
-            font-size: 24px; 
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--primary-neon), 0 0 20px rgba(0, 243, 255, 0.5);
+        /* 杀号模式切换器 */
+        .kill-mode-switch {
+            display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 15px;
         }
-        h3 { 
-            color: var(--primary-neon); 
-            border-bottom: 1px solid rgba(0, 243, 255, 0.2); 
-            padding-bottom: 10px; 
-            margin-top: 0; 
-            font-size: 16px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+        .kill-mode-btn {
+            flex: 1; text-align: center; padding: 10px 0; font-size: 15px; font-weight: bold; color: #64748b;
+            border-radius: 8px; cursor: pointer; transition: 0.3s; border: none; box-shadow: none; background: transparent;
         }
+        .kill-mode-btn.active { background: #fff; color: #e53935; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        /* 折疊說明框 */
-        .changelog-box { background: rgba(255, 183, 3, 0.1); border-left: 4px solid var(--warning-neon); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: var(--text-main);}
-        .changelog-box summary { cursor: pointer; font-weight: bold; color: var(--warning-neon); outline: none; font-size: 15px; text-shadow: 0 0 5px rgba(255,183,3,0.4);}
-        .changelog-content { margin-top: 10px; line-height: 1.6; border-top: 1px dashed rgba(255,183,3,0.3); padding-top: 10px; }
+        .latest-draw-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 16px 18px; border-radius: 14px; margin-bottom: 20px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+            border: 1px solid rgba(255,255,255,0.06);
+            display: none;
+        }
+        .draw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .draw-label { font-size: 12px; color: #94a3b8; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .draw-period { font-size: 13px; color: #fbbf24; font-weight: bold; font-family: monospace; }
+        .draw-balls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .ball-3d {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 16px; font-weight: 900; color: #fff;
+            position: relative; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            font-family: "SF Mono", Consolas, monospace;
+            box-shadow: inset -2px -2px 6px rgba(0,0,0,0.55), inset 2px 2px 4px rgba(255,255,255,0.35), 0 3px 6px rgba(0,0,0,0.4);
+        }
+        .ball-3d::after {
+            content: ''; position: absolute; top: 15%; left: 20%;
+            width: 25%; height: 25%; border-radius: 50%;
+            background: rgba(255,255,255,0.55); filter: blur(1.5px);
+        }
+        .wave-red { background: radial-gradient(circle at 35% 35%, #ff6b6b, #b90000); }
+        .wave-blue { background: radial-gradient(circle at 35% 35%, #74b9ff, #0033cc); }
+        .wave-green { background: radial-gradient(circle at 35% 35%, #55efc4, #007733); }
+        .ball-special {
+            width: 46px; height: 46px; font-size: 18px;
+            border: 3px solid #fbbf24;
+            box-shadow: 0 0 15px rgba(251,191,36,0.6), inset -2px -2px 6px rgba(0,0,0,0.55), inset 2px 2px 4px rgba(255,255,255,0.35);
+        }
+        .plus-sign { color: #fbbf24; font-size: 20px; font-weight: 900; margin: 0 4px; text-shadow: 0 0 8px rgba(251,191,36,0.6); }
+
+        .changelog-box { background: #fffde7; border-left: 5px solid #fbc02d; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #5d4037;}
+        .changelog-box summary { cursor: pointer; font-weight: bold; color: #f57f17; outline: none; font-size: 15px;}
+        .changelog-content { margin-top: 10px; line-height: 1.6; border-top: 1px dashed #ffe082; padding-top: 10px; }
         .changelog-content ul { padding-left: 20px; margin: 0; }
         .changelog-content li { margin-bottom: 6px; }
 
-        /* 輸入框與表單 */
-        input[type="date"], input[type="number"], input[type="text"], select { 
-            padding: 12px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 8px; 
-            font-size: 15px; 
-            outline: none; 
-            background-color: rgba(0,0,0,0.3); 
-            color: var(--primary-neon);
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        input:focus, select:focus {
-            border-color: var(--primary-neon);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-        }
+        input[type="date"], input[type="number"], input[type="text"], select { padding: 10px; border: 1px solid #dcdcdc; border-radius: 8px; font-size: 15px; outline: none; background-color: #fafafa; }
         .paste-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .paste-group input { flex: 1; min-width: 0; }
         .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; width: 100%; }
-        .num-grid input[type="number"] { width: 100%; box-sizing: border-box; padding: 12px 0; text-align: center; font-weight: bold; font-size: 18px; color: var(--danger-neon); border-color: rgba(255,0,60,0.3); }
-        
-        /* 特碼輸入 */
-        .special-row { margin-top: 12px; display: flex; align-items: center; gap: 10px; background: rgba(255, 183, 3, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 183, 3, 0.3);}
-        .special-row label { font-weight: bold; color: var(--warning-neon); white-space: nowrap; text-shadow: 0 0 5px rgba(255,183,3,0.5);}
-        .special-row input[type="number"] { width: 80px; text-align: center; font-weight: bold; font-size: 18px; color: var(--warning-neon); border-color: rgba(255,183,3,0.5); }
-        .special-row span { font-size: 12px; color: var(--text-muted); }
-        
-        /* 圖表選擇器 */
-        .mode-selector { background: rgba(0, 243, 255, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px; border: 1px solid rgba(0, 243, 255, 0.1);}
+        .num-grid input[type="number"] { width: 100%; box-sizing: border-box; padding: 12px 0; text-align: center; font-weight: bold; font-size: 18px; color: var(--danger-color); }
+
+        .mode-selector { background: #eef5ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px; }
         @media (min-width: 600px) { .mode-selector { grid-template-columns: repeat(4, 1fr); } }
         @media (min-width: 900px) { .mode-selector { grid-template-columns: repeat(7, 1fr); } }
-        .mode-selector label { cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;}
-        .mode-selector label:hover { background: rgba(0, 243, 255, 0.1); border-color: var(--primary-neon); }
-        .label-A { color: #ff4d4d; } .label-B { color: #4d94ff; } .label-C { color: #ff9933; } .label-D { color: #33cc33; } .label-E { color: #cc66ff; }
-        .label-F { color: #ff66b3; } .label-G { color: #00cc99; }
-        
-        /* 控制區 */
-        .mod-selector { background: rgba(0, 243, 255, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; align-items: center; font-size: 14px; border: 1px solid rgba(0, 243, 255, 0.1);}
-        .kill-controls { background: rgba(157, 78, 221, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; border: 1px solid rgba(157, 78, 221, 0.3); }
-        .kill-controls label { font-weight: bold; color: #d8b4fe; white-space: nowrap; }
-        .kill-controls input[type="number"] { width: 80px; text-align: center; font-weight: bold; color: var(--secondary-neon); border-color: rgba(157, 78, 221, 0.5); }
-        .kill-controls input[type="text"] { flex: 1; min-width: 260px; }
-        .kill-controls select { border-color: rgba(157, 78, 221, 0.5); font-weight: bold; color: #d8b4fe; }
-        
-        /* 按鈕 */
-        button { 
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2) 0%, rgba(0, 243, 255, 0.05) 100%); 
-            color: var(--primary-neon); 
-            border: 1px solid var(--primary-neon); 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: all 0.3s; 
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
-            text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-        }
-        button:hover { 
-            background: rgba(0, 243, 255, 0.2); 
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-            transform: translateY(-2px);
-        }
-        .btn-blue { border-color: #3b82f6; color: #60a5fa; box-shadow: 0 0 10px rgba(59, 130, 246, 0.1); text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);}
-        .btn-blue:hover { background: rgba(59, 130, 246, 0.2); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);}
-        .btn-red { border-color: var(--danger-neon); color: #ff4d6d; box-shadow: 0 0 10px rgba(255,0,60,0.1); text-shadow: 0 0 5px rgba(255,0,60,0.5);}
-        .btn-red:hover { background: rgba(255,0,60,0.2); box-shadow: 0 0 20px rgba(255,0,60,0.4);}
-        .btn-orange { border-color: var(--warning-neon); color: #fcd34d; box-shadow: 0 0 10px rgba(255,183,3,0.1); text-shadow: 0 0 5px rgba(255,183,3,0.5);}
-        .btn-orange:hover { background: rgba(255,183,3,0.2); box-shadow: 0 0 20px rgba(255,183,3,0.4);}
-        
-        .btn-copy { font-size: 14px; padding: 10px; margin-top: 15px; width: 100%; border-radius: 8px; border-color: var(--success-neon); color: var(--success-neon); box-shadow: 0 0 10px rgba(0,255,136,0.1); text-shadow: 0 0 5px rgba(0,255,136,0.5);}
-        .btn-copy:hover { background: rgba(0,255,136,0.15); box-shadow: 0 0 20px rgba(0,255,136,0.4);}
-        
-        .btn-highlight { 
-            background: linear-gradient(135deg, rgba(157,78,221,0.3) 0%, rgba(0,243,255,0.3) 100%); 
-            font-size: 18px; 
-            padding: 18px; 
-            margin-top: 15px; 
-            width: 100%; 
-            border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            box-shadow: 0 0 20px rgba(157,78,221,0.3), inset 0 0 10px rgba(255,255,255,0.2);
-            text-shadow: 0 0 10px #fff;
-            letter-spacing: 2px;
-        }
-        .btn-highlight:hover { box-shadow: 0 0 30px rgba(0,243,255,0.5), inset 0 0 15px rgba(255,255,255,0.3); transform: scale(1.02);}
+        .mode-selector label { cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; padding: 8px; background: #fff; border-radius: 6px; border: 1px solid #dcdcdc;}
+        .label-A { color: #d32f2f; } .label-B { color: #1976d2; } .label-C { color: #d84315; } .label-D { color: #2e7d32; } .label-E { color: #8e24aa; }
+        .label-F { color: #c2185b; } .label-G { color: #00796b; }
 
-        /* 歷史數據區 */
+        .mod-selector { background: #eef5ff; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; align-items: center; font-size: 14px; }
+        button { background-color: var(--success-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-blue { background-color: var(--primary-color); } .btn-red { background-color: var(--danger-color); } .btn-orange { background-color: #f57c00; }
+        .btn-copy { background-color: #00897b; font-size: 14px; padding: 10px; margin-top: 12px; width: 100%; border-radius: 8px;}
+        .btn-highlight { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); font-size: 16px; padding: 15px; margin-top: 15px; width: 100%; border-radius: 8px; }
+        .btn-cloud { background: linear-gradient(135deg, #00b4db, #0083b0); font-size: 13px; padding: 10px 16px; border-radius: 8px; }
+        .btn-vip-top { background: linear-gradient(135deg, #FDE047, #D97706); color: #000; font-size: 13px; padding: 10px 16px; border-radius: 8px; font-weight: bold; }
+        .btn-vip-top.is-vip { background: linear-gradient(135deg, #10b981, #059669); color: #fff; cursor: default; }
+
         .history-panel { display: flex; gap: 20px; flex-wrap: wrap; }
-        .history-box { flex: 1; min-width: 280px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
-        textarea { width: 100%; height: 120px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: monospace; font-size: 14px; margin-bottom: 10px; resize: vertical; background: rgba(0,0,0,0.3); color: var(--text-main);}
-        textarea:focus { border-color: var(--primary-neon); outline: none; box-shadow: 0 0 10px rgba(0,243,255,0.2);}
-        .history-list { max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0; margin-top: 10px; list-style: none; border: 1px solid rgba(255,255,255,0.1);}
-        .history-list li { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; justify-content: space-between; font-size: 14px; transition: 0.2s;}
-        .history-list li:hover { background: rgba(0, 243, 255, 0.1); }
-        .history-list li span.nums { color: #ff4d6d; font-weight: bold;}
-        .history-list li span.sp { color: var(--warning-neon); font-weight: bold;}
-
-        /* 資訊提示框 */
-        .calc-info { background: rgba(0, 255, 136, 0.1); color: #34d399; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 15px; border-left: 4px solid var(--success-neon); display: none; }
-        .warning-info { background: rgba(255, 183, 3, 0.1); color: #fcd34d; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: bold; display: none; border-left: 4px solid var(--warning-neon);}
-        .filter-result-box { background: rgba(157, 78, 221, 0.1); color: #d8b4fe; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 15px; font-weight: bold; border-left: 4px solid var(--secondary-neon); display: none; line-height: 1.6;}
-        .diff-box { margin-top:10px; border-top: 1px dashed rgba(157, 78, 221, 0.3); padding-top:10px; font-size:14px; font-weight: normal;}
-
-        /* 殺號面板 (暗黑發光) */
-        .kill-box { background: rgba(10, 15, 28, 0.9); color: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 0 30px rgba(255, 0, 60, 0.2), inset 0 0 0 1px rgba(255, 0, 60, 0.3); margin-bottom: 25px; display: none; position: relative; overflow: hidden;}
-        .kill-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--danger-neon), transparent); }
-        .kill-box h3 { color: var(--danger-neon); border-bottom: 1px solid rgba(255, 0, 60, 0.2); justify-content: center; text-shadow: 0 0 10px rgba(255,0,60,0.6);}
-        
-        .kill-nums-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 25px 0; }
-        .kill-ball { 
-            width: 55px; height: 55px; border-radius: 50%; 
-            background: radial-gradient(circle at 30% 30%, #ff4d6d, #8a0022); 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 24px; font-weight: bold; color: #fff; 
-            box-shadow: 0 0 15px rgba(255,0,60,0.6), inset -5px -5px 15px rgba(0,0,0,0.5); 
-            border: 1px solid rgba(255,255,255,0.4); 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .kill-ball.zone-fill { 
-            background: radial-gradient(circle at 30% 30%, #c084fc, #581c87); 
-            box-shadow: 0 0 15px rgba(157,78,221,0.6), inset -5px -5px 15px rgba(0,0,0,0.5); 
-            border-color: rgba(216,180,254,0.5);
-        }
-        .kill-ball.manual { 
-            background: radial-gradient(circle at 30% 30%, #fcd34d, #b45309); 
-            box-shadow: 0 0 15px rgba(255,183,3,0.6), inset -5px -5px 15px rgba(0,0,0,0.5); 
-            border-color: rgba(253,230,138,0.5);
-        }
-        
-        .kill-desc { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 15px; line-height: 1.6;}
-        .special-ref { text-align: center; font-size: 14px; color: var(--warning-neon); margin-bottom: 10px; font-weight: bold; text-shadow: 0 0 5px rgba(255,183,3,0.5);}
-
-        /* 回測區塊 */
-        .backtest-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(0,243,255,0.2); padding: 15px; border-radius: 12px; margin-top: 15px; display: none; color: var(--text-main);}
-        .backtest-controls { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; border: 1px dashed rgba(0, 243, 255, 0.3); flex-wrap: wrap;}
-        .backtest-controls label { color: var(--primary-neon); font-weight: bold; }
-        .backtest-controls input { border-color: rgba(0,243,255,0.5); font-size: 16px; text-align: center; font-weight: bold; color: var(--primary-neon); width: 80px;}
-
-        /* 九宮格圖表 */
+        .history-box { flex: 1; min-width: 280px; background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #eee;}
+        .history-list { max-height: 300px; overflow-y: auto; background: #fff; border-radius: 8px; padding: 0; margin-top: 10px; list-style: none; border: 1px solid #dcdcdc;}
+        .history-list li { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; font-size: 14px;}
+        .history-list li:hover { background: #f0f7ff; }
+        .history-list li span.nums { color: var(--danger-color); font-weight: bold;}
+        .calc-info { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 15px; border-left: 5px solid #4caf50; display: none; }
+        .warning-info { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: bold; display: none;}
+        .filter-result-box { background: #fce4ec; color: #880e4f; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 15px; font-weight: bold; border-left: 5px solid #e91e63; display: none; line-height: 1.6;}
+        .diff-box { margin-top:10px; border-top:1px dashed #e91e63; padding-top:10px; font-size:14px; font-weight:normal;}
+        .kill-box { background: #212121; color: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 20px rgba(0,0,0,0.2); margin-bottom: 20px; display: none; border: 2px solid #333; }
+        .kill-box h3 { color: #ff5252; border-bottom: 1px solid #424242; justify-content: center;}
+        .kill-nums-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+        .kill-ball { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(145deg, #e53935, #b71c1c); display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; color: #ffffff; box-shadow: 0 4px 10px rgba(229,57,53,0.4); border: 2px solid #ef5350; }
+        .kill-desc { font-size: 13px; color: #bdbdbd; text-align: center; margin-bottom: 15px; line-height: 1.6;}
+        .backtest-box { background: #f0f4c3; border-left: 5px solid #cddc39; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; color: #333;}
+        .backtest-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: center; background: #fff8e1; padding: 15px; border-radius: 8px; border: 2px dashed #ffb300; flex-wrap: wrap;}
+        .backtest-controls input, .backtest-controls select { border-color: #ffca28; font-size: 15px; text-align: center; font-weight: bold; color: #e65100; }
+        .backtest-controls input[type="number"] { width: 90px; font-size: 18px;}
+        .backtest-controls select { width: 80px; }
         .grids-wrapper { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .grid-box { flex: 1; min-width: 320px; max-width: 480px; background: var(--bg-panel); padding: 20px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.05); display: none; margin-bottom: 20px; border: 1px solid var(--border-glow);}
-        .grid-title { text-align: center; color: #fff; font-size: 16px; margin-bottom: 15px;}
-        .grid-title small { color: var(--text-muted); display: block; font-size: 12px; margin-top: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; background: rgba(0,0,0,0.5); border: 2px solid rgba(0, 243, 255, 0.3); border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);}
-        .cell { background: var(--cell-bg); text-align: center; padding: 12px 0; font-size: 16px; font-weight: bold; position: relative; color: var(--text-main); user-select: none; border: 1px solid rgba(255,255,255,0.02);}
-        
-        /* 格子特效 */
-        .radiate-node { background-color: rgba(255, 183, 3, 0.3) !important; color: #fcd34d !important; box-shadow: inset 0 0 10px rgba(255,183,3,0.5); }
-        .blue-zone { background-color: rgba(0, 243, 255, 0.2) !important; color: #67e8f9 !important; box-shadow: inset 0 0 10px rgba(0,243,255,0.4); }
-        .prev-red { background-color: rgba(255, 0, 60, 0.4) !important; color: #fff !important; box-shadow: inset 0 0 15px rgba(255,0,60,0.8); text-shadow: 0 0 5px #fff;}
-        .special-node { background-color: rgba(255, 183, 3, 0.5) !important; color: #fff !important; border: 1px solid #fcd34d !important; box-sizing: border-box; box-shadow: inset 0 0 15px rgba(255,183,3,0.8); text-shadow: 0 0 5px #fff;}
-        .center-node { border: 2px solid var(--primary-neon) !important; border-radius: 50%; color: var(--primary-neon) !important; z-index: 4; transform: scale(1.1); background-color: var(--cell-active) !important; box-shadow: 0 0 15px var(--primary-neon);}
-        .center-node.prev-red { background-color: rgba(255, 0, 60, 0.2) !important; color: #fff !important; border-color: var(--danger-neon) !important; box-shadow: 0 0 15px var(--danger-neon);}
-        .fan-overlap { border: 2px solid var(--warning-neon) !important; border-radius: 50%; z-index: 5; box-shadow: 0 0 15px var(--warning-neon);}
-        .jiugong-linked { border: 2px dashed var(--success-neon) !important; box-shadow: inset 0 0 10px rgba(0,255,136,0.3), 0 0 10px rgba(0,255,136,0.2) !important; z-index: 3; border-radius: 4px; }
-        
-        .legend { font-size: 13px; color: var(--text-muted); margin-top: 15px; line-height: 1.8; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);}
+        .grid-box { flex: 1; min-width: 320px; max-width: 480px; background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: none; margin-bottom: 20px;}
+        .grid-title { text-align: center; color: #333; font-size: 16px; margin-bottom: 15px;}
+        .grid-title small { color: #888; display: block; font-size: 12px; margin-top: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; background: #455a64; border: 3px solid #455a64; border-radius: 6px; overflow: hidden;}
+        .cell { background: #fff; text-align: center; padding: 12px 0; font-size: 16px; font-weight: bold; position: relative; color: #333; user-select: none;}
+        .radiate-node { background-color: #fff59d !important; }
+        .blue-zone { background-color: var(--blue-zone) !important; color: var(--blue-text) !important; }
+        .prev-red { background-color: #ff5252 !important; color: #ffffff !important; }
+        .center-node { border: 3px solid #ff0000 !important; border-radius: 50%; color: #ff0000 !important; z-index: 4; transform: scale(1.05); background-color: #fff !important;}
+        .center-node.prev-red { background-color: #ffcdd2 !important; color: #ff0000 !important;}
+        .fan-overlap { border: 3px solid #ff3d00 !important; border-radius: 50%; z-index: 5;}
+        .jiugong-linked { border: 3px dashed #2e7d32 !important; box-shadow: inset 0 0 8px rgba(46,125,50,0.3) !important; z-index: 3; border-radius: 6px; }
+        .legend { font-size: 13px; color: #666; margin-top: 15px; line-height: 1.8; background: #f8f9fa; padding: 12px; border-radius: 8px; }
         .legend span { display: inline-block; margin-right: 5px; padding: 2px 6px; border-radius: 4px;}
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 -2px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 12px;}
+        .nav-item i { font-size: 20px; margin-bottom: 4px; font-style: normal;}
 
-        /* 底部導航 (科技版) */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: rgba(10, 15, 28, 0.85); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(0, 243, 255, 0.2);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5); 
-            display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; 
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 12px; transition: 0.3s;}
-        .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; text-shadow: 0 0 5px rgba(255,255,255,0.1);}
-        .nav-item:hover, .nav-item.active { color: var(--primary-neon); text-shadow: 0 0 8px rgba(0,243,255,0.5);}
-        .nav-item:hover i, .nav-item.active i { text-shadow: 0 0 10px var(--primary-neon);}
-
-        /* 配置面板 */
-        .cfg-panel { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .cfg-panel h4 { margin: 0 0 10px; color: var(--primary-neon); font-size: 15px; cursor: pointer; user-select: none; }
+        .cfg-panel { background: #f0f7ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #cfe3ff; }
+        .cfg-panel h4 { margin: 0 0 10px; color: #1976d2; font-size: 15px; cursor: pointer; user-select: none; }
         .cfg-grid { display: grid; grid-template-columns: 1fr; gap: 8px; font-size: 13px; }
         @media (min-width: 700px) { .cfg-grid { grid-template-columns: 1fr 1fr; } }
-        .cfg-item { background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; }
-        .cfg-item label { flex: 1; font-weight: bold; color: var(--text-main); cursor: pointer; }
+        .cfg-item { background: #fff; padding: 8px 10px; border-radius: 6px; border: 1px solid #dcdcdc; display: flex; align-items: center; gap: 8px; }
+        .cfg-item label { flex: 1; font-weight: bold; color: #333; cursor: pointer; }
         .cfg-item input[type="number"] { width: 60px; padding: 4px 6px; font-size: 13px; }
-        
-        /* 回測表格 */
-        .bt-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.2); table-layout: fixed; border-radius: 8px; overflow: hidden;}
-        .bt-table th { background: rgba(0, 243, 255, 0.1); padding: 10px 4px; border: 1px solid rgba(0,243,255,0.1); font-weight: bold; color: var(--primary-neon);}
-        .bt-table td { padding: 8px 4px; border: 1px solid rgba(255,255,255,0.05); text-align: center; word-wrap: break-word; }
+        .cfg-hint { font-size: 12px; color: #d32f2f; margin-top: 8px; padding: 6px 10px; background: #fff3e0; border-radius: 6px; }
+
+        .bt-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px; background: #fff; table-layout: fixed; }
+        .bt-table th { background: #e8f5e9; padding: 8px 4px; border: 1px solid #ccc; font-weight: bold; }
+        .bt-table td { padding: 6px 4px; border: 1px solid #ccc; text-align: center; word-wrap: break-word; }
         .bt-table td.left { text-align: left; }
-        .bt-best td { background: rgba(0, 255, 136, 0.1) !important; font-weight: bold; color: var(--success-neon); }
-        .bt-cur td { border: 1px solid var(--warning-neon) !important; color: var(--warning-neon); }
-        .bt-blitz td { background: rgba(157, 78, 221, 0.1) !important; }
-        .btn-apply { background: rgba(0, 255, 136, 0.1); color: var(--success-neon); border: 1px solid var(--success-neon); padding: 4px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 6px; box-shadow: none; display: block; width: 100%; text-shadow: none;}
-        .btn-apply:hover { background: rgba(0, 255, 136, 0.2); transform: none; box-shadow: 0 0 10px rgba(0,255,136,0.3);}
-        
-        .btn-glow { animation: neonGlow 1.5s infinite alternate; }
-        @keyframes neonGlow { 
-            from { box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); border-color: rgba(0, 243, 255, 0.5);} 
-            to { box-shadow: 0 0 25px rgba(0, 243, 255, 0.6); border-color: var(--primary-neon);} 
+        .bt-table td:nth-child(1) { width: 32%; }
+        .bt-table td:nth-child(2) { width: 18%; }
+        .bt-table td:nth-child(3) { width: 16%; }
+        .bt-table td:nth-child(4) { width: 16%; }
+        .bt-table td:nth-child(5) { width: 18%; }
+
+        .bt-best td { background: #c8e6c9 !important; font-weight: bold; }
+        .bt-cur td { border: 2px solid #ffb300 !important; }
+        .btn-apply { background-color: #43a047; color: white; border: none; padding: 4px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 4px; box-shadow: none; display: block; width: 100%;}
+        .btn-apply:hover { background-color: #2e7d32; transform: none;}
+
+        .btn-glow { animation: glow 2s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 5px #ffb300; } to { box-shadow: 0 0 20px #ff9800; } }
+
+        .detail-box { margin-top: 15px; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 10px; }
+        .detail-summary { cursor: pointer; font-weight: bold; color: #1976d2; outline: none; user-select: none; display: flex; justify-content: space-between; align-items: center; }
+        .detail-content { max-height: 250px; overflow-y: auto; font-size: 13px; line-height: 1.6; margin-top: 10px; padding: 10px; background: #fafafa; border-radius: 4px; border: 1px solid #eee; }
+        .log-perfect { color: #2e7d32; font-weight: bold; }
+        .log-error { color: #d32f2f; font-weight: bold; }
+
+        .manual-box { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 5px solid #0284c7; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .manual-box summary { cursor: pointer; font-weight: bold; color: #0369a1; outline: none; font-size: 16px; padding: 5px 0; }
+        .manual-content { margin-top: 15px; line-height: 1.8; font-size: 14px; color: #334155; }
+        .manual-section { background: #fff; padding: 14px 16px; border-radius: 10px; margin-bottom: 12px; border-left: 3px solid #0ea5e9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .manual-section:last-child { margin-bottom: 0; }
+        .manual-section h5 { color: #0369a1; margin: 0 0 8px; font-size: 14px; }
+        .manual-section p { margin: 4px 0; color: #475569; }
+        .manual-section .highlight { color: #dc2626; font-weight: bold; }
+        .manual-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        @media (min-width: 700px) { .manual-grid { grid-template-columns: 1fr 1fr; } }
+
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 14px 24px; border-radius: 12px; z-index: 100000; opacity: 0; pointer-events: none; transition: 0.3s; font-size: 14px; font-weight: bold; backdrop-filter: blur(10px); max-width: 80vw; text-align: center; }
+        .toast.show { opacity: 1; }
+
+        .vip-gate { position: fixed; inset: 0; z-index: 99999; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
+        .vip-gate.hide { display: none; }
+        .vip-gate-card { background: #fff; border-radius: 20px; width: 100%; max-width: 340px; padding: 32px 24px 26px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); text-align: center; position: relative; overflow: hidden; }
+        .vip-gate-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #FDE047, #D97706); }
+        .vip-gate-close { position: absolute; top: 10px; right: 14px; font-size: 22px; color: #94a3b8; background: transparent; border: none; cursor: pointer; padding: 6px 10px; box-shadow: none; }
+        .vip-gate-close:hover { color: #333; transform: none; background: #f1f5f9; border-radius: 8px; }
+        .vip-gate-lock-icon { font-size: 52px; margin-bottom: 16px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+        .vip-gate-title { font-size: 20px; font-weight: 900; color: #1e293b; margin-bottom: 8px; }
+        .vip-gate-sub { font-size: 13px; color: #64748b; margin-bottom: 22px; line-height: 1.6; }
+        .vip-gate-input { width: 100%; padding: 13px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; margin-bottom: 10px; text-align: center; letter-spacing: 2px; font-family: monospace; outline: none; transition: 0.2s; background: #f8fafc; box-sizing: border-box; }
+        .vip-gate-input:focus { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,0.15); background: #fff; }
+        .vip-gate-status { font-size: 12px; margin-bottom: 12px; color: #64748b; min-height: 16px; font-weight: bold; }
+        .vip-gate-status.err { color: #e11d48; }
+        .vip-gate-status.ok { color: #059669; }
+        .vip-gate-btn { width: 100%; padding: 14px; background: #0f172a; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: 0.2s; }
+        .vip-gate-btn:active { transform: scale(0.97); }
+        .vip-gate-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .vip-gate-contact { width: 100%; padding: 14px; background: linear-gradient(135deg, #FDE047, #D97706); color: #000; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; display: inline-block; text-decoration: none; transition: 0.2s; box-sizing: border-box; }
+        .vip-gate-hint { font-size: 11px; color: #94a3b8; margin-top: 14px; line-height: 1.5; }
+
+        .sync-tag { font-size: 12px; background: #f0f4f8; padding: 10px 14px; border-radius: 8px; color: #555; flex: 1; border-left: 3px solid #64748b; }
+        .sync-tag.ok { background: #ecfdf5; color: #047857; border-left-color: #10b981; }
+        .sync-tag.err { background: #fef2f2; color: #b91c1c; border-left-color: #ef4444; }
+        .sync-tag.loading { background: #eff6ff; color: #1e40af; border-left-color: #3b82f6; }
+
+        /* 黑科技 AI 寻优加载动画 */
+        .ai-loader-container {
+            background: #090e17;
+            border: 1px solid #1e3a8a;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(56, 189, 248, 0.05);
+            font-family: "SF Mono", Consolas, monospace;
+            color: #38bdf8;
+            text-align: left;
+        }
+        .ai-loader-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 8px;
+        }
+        .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+        .ai-dot.blink { animation: blink 1s infinite alternate; }
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.2; } }
+
+        .ai-log {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            min-height: 60px;
+            color: #10b981;
+            white-space: pre-wrap;
+        }
+        .ai-log::after {
+            content: '_';
+            animation: blink 0.8s infinite step-end;
+            color: #10b981;
         }
 
-        .detail-box { margin-top: 15px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; }
-        .detail-summary { cursor: pointer; font-weight: bold; color: var(--primary-neon); outline: none; user-select: none; display: flex; justify-content: space-between; align-items: center; }
-        .detail-content { max-height: 250px; overflow-y: auto; font-size: 13px; line-height: 1.6; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
-        .log-perfect { color: var(--success-neon); font-weight: bold; }
-        .log-error { color: var(--danger-neon); font-weight: bold; }
-        
-        .mode-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 4px; vertical-align: middle;}
-        .mb-score { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5);}
-        .mb-blind { background: rgba(157, 78, 221, 0.2); color: #d8b4fe; border: 1px solid rgba(157, 78, 221, 0.5);}
+        .ai-progress-wrap {
+            width: 100%; height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; position: relative; margin-bottom: 12px;
+        }
+        .ai-progress-bar {
+            width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #38bdf8);
+            box-shadow: 0 0 10px #38bdf8;
+            transition: width 0.3s ease;
+        }
 
-        /* 更多頁面專用樣式 */
-        .more-section { line-height: 1.8; }
-        .more-section h4 { color: var(--primary-neon); margin-top: 20px; margin-bottom: 10px; font-size: 16px; border-left: 3px solid var(--primary-neon); padding-left: 10px; }
-        .more-section p { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
-        .more-section ul { color: var(--text-muted); font-size: 14px; padding-left: 20px; margin-bottom: 15px;}
-        .more-section li { margin-bottom: 8px; }
-        .more-section strong { color: var(--text-main); }
-        .more-section .highlight-text { color: var(--warning-neon); font-weight: bold; }
+        .ai-stats {
+            display: flex; justify-content: space-between; font-size: 12px; color: #64748b;
+        }
+        .ai-stats b { color: #fbbf24; }
+        
+        .ai-loader-scanline {
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 10px #38bdf8;
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
+<div id="toast" class="toast">提示</div>
+
+<div class="vip-gate hide" id="vipGate">
+    <div class="vip-gate-card">
+        <button class="vip-gate-close" onclick="closeVipModal()">×</button>
+        <div class="vip-gate-lock-icon">🔒</div>
+        <div class="vip-gate-title">VIP 功能授權</div>
+        <div class="vip-gate-sub" id="vipGateSub">此功能為 VIP 專享，請輸入卡密激活</div>
+        <input id="licenseInput" class="vip-gate-input" placeholder="請輸入卡密" autocomplete="off" spellcheck="false">
+        <div class="vip-gate-status" id="vipStatusLine"></div>
+        <button id="btnActivate" class="vip-gate-btn" onclick="doActivate()">激活 VIP</button>
+        <a href="https://t.me/onyx668" target="_blank" class="vip-gate-contact">聯繫客服購買卡密</a>
+        <div class="vip-gate-hint">激活成功後自動記住卡密，刷新無需重複輸入</div>
+    </div>
+</div>
+
 <div class="app-container" id="top">
-    
     <div class="changelog-box">
         <details>
-            <summary>🚀 點擊查看 v15.0 賽博旗艦版更新說明</summary>
+            <summary>📢 點擊查看 v14.6 更新說明</summary>
             <div class="changelog-content">
-                <strong>✨ 視覺與體驗全面進化：</strong>
+                <strong>🔐 v14.6 主要更新：</strong>
                 <ul>
-                    <li><b>賽博科技風 UI：</b> 採用深色背景與霓虹光效，重構了所有按鈕、面板與圖表。</li>
-                    <li><b>3D 霓虹殺號球：</b> 殺號結果更加立體，純盲區（紅）、熱區補位（紫）質感大幅提升。</li>
-                    <li><b>新增「更多」板塊：</b> 底部導航新增說明書，收錄操作指南與玄學算法原理。</li>
-                    <li><b>嚴格盲區解耦：</b> 沿用 v14.7 邏輯，一鍵應用不再強制勾選嚴格盲區，保證補齊你設定的殺號數。</li>
+                    <li><b>新增特码杀：</b> 杀号模块新增“特码杀号”模式，支持自定义杀5~15个号。</li>
+                    <li><b>回测隔离：</b> 平码与特码的回测逻辑完全分离，避免混淆。</li>
+                    <li><b>架构整合：</b> 采用选项卡切换，无需刷新页面。</li>
                 </ul>
             </div>
         </details>
     </div>
 
-    <!-- 分析區 (保留原有結構，美化由 CSS 完成) -->
+    <div class="latest-draw-box" id="latestDrawBox">
+        <div class="draw-header">
+            <span class="draw-label">🎲 最新開獎</span>
+            <span class="draw-period" id="latestPeriod">--</span>
+        </div>
+        <div class="draw-balls" id="latestBalls"></div>
+    </div>
+
+    <div class="manual-box">
+        <details>
+            <summary>📖 工具使用說明書（點擊展開 / 收起）</summary>
+            <div class="manual-content">
+                
+                <div class="manual-section">
+                    <h5>🚀 一、 3 秒快速上手</h5>
+                    <div class="manual-grid">
+                        <p><b>Step 1：</b>點擊頂部「☁️ 雲端同步」，系統自動抓取最新開獎數據並填入。</p>
+                        <p><b>Step 2：</b>點擊「⚡ 一鍵分析並生成圖表」，系統自動排盤並計算殺號。</p>
+                        <p><b>Step 3：</b>看下方黑色卡片的「殺號推薦」，點擊複製即可使用。</p>
+                    </div>
+                </div>
+
+                <div class="manual-section">
+                    <h5>🎨 二、 陣圖怎麼選？</h5>
+                    <p style="margin-bottom:8px;">系統內建七大排盤法，黃色為放射熱區，紅色為上期開獎：</p>
+                    <p><b>圖A(張氏固定)：</b> 經典螺旋，重心死守25，最穩定的基準盤。</p>
+                    <p><b>圖B(江恩動態)：</b> 依當天日期變換重心，抓即期短線趨勢。</p>
+                    <p><b>圖C(洛書飛星) / 圖G(河洛五行)：</b> 順逆時針排布，補足盲區。</p>
+                    <p><b>圖D(九宮幻方)：</b> 縱橫斜等和，自帶「綠虛線」九宮共振，防重號。</p>
+                    <p><b>圖E(螺旋四方)：</b> 固定盤，帶有藍底連線區，專抓強莊連線。</p>
+                    <p><b>圖F(太極雙旋)：</b> 奇偶數交替排布，防單邊極端。</p>
+                    <p style="color:#dc2626; margin-top:8px;"><b>💡 建議：</b>實測 **2~3 張圖交叉** 的勝率最高。圖選得越多，熱區越廣，盲區越少，殺號勝率反而會下降。</p>
+                </div>
+
+                <div class="manual-section">
+                    <h5>🔪 三、 殺號面板詳解（平碼 vs 特碼）</h5>
+                    <p style="margin-bottom:8px;">黑色殺號卡片中，支援兩種玩法切換：</p>
+                    <p>🔹 <b>殺平碼：</b> 固定推薦 5 個號碼，適合常規「平碼五不中」。</p>
+                    <p>🔹 <b>殺特碼：</b> 支援自定義數量（<b>5~15 個</b>）。在特碼玩法中，排除的號碼越多，剩下的可選範圍越小，勝率自然就下降。建议最佳数量：5-10码</p>
+                </div>
+
+                <div class="manual-section">
+                    <h5>⚙️ 四、 高階參數：防翻車核心</h5>
+                    <p>點擊「全量過濾參數設定」，新手強烈建議開啟以下兩項：</p>
+                    <p>🛡️ <b>遺漏防爆冷：</b> 如果某個號碼超過 15 期沒出，系統會自動保護它，絕不殺它，防止被突然爆冷擊穿。</p>
+                    <p>🔄 <b>連黑止損：</b> 如果系統連錯 1 期，會自動降低「盲區」權重，讓接下來的推薦更保守，防止一路黑到底。</p>
+                    <p>🎯 <b>組合約束：</b> 針對平碼五不中，強制殺號符合「奇偶平衡、分區分散」，避免殺出極端陣型。</p>
+                </div>
+
+                <div class="manual-section">
+                    <h5>🤖 五、 基因尋優與回測（VIP 專享）</h5>
+                    <p>每次開盤前，建議先跑一次尋優：</p>
+                    <p>1. <b>選圖量區間：</b> 實測 <b>2~3 張圖</b> 的組合勝率最高，圖越多反而勝率越低。</p>
+                    <p>2. <b>點擊基因尋優：</b> 系統會自動遍歷組合，找出近期最穩的參數。</p>
+                    <p>3. <b>一鍵應用：</b> 跑完後點擊表格裡的「一鍵應用」，下方殺號會立刻更新為最優配置。</p>
+                </div>
+
+                <div class="manual-section" style="background: #fef2f2; border-left-color: #dc2626;">
+                    <h5 style="color: #dc2626;">⚠️ 六、 实操鐵律（必看）</h5>
+                    <p style="color: #7f1d1d;"><b>1. 極限止損：</b> 如果看到回測結果裡，當前的「連黑次數」已經等於「最大連黑」，<span class="highlight">立刻停手觀望</span>，這說明模型到了冷卻期。</p>
+                    <p style="color: #7f1d1d;"><b>2. 不要盲目追熱：</b> 如果某個參數連對了 4、5 期，建議主動換個圖陣組合再戰，防範系統回調。</p>
+                    <p style="color: #7f1d1d;"><b>3. 理性娛樂：</b> 数据仅供娱乐参考研究，不作实际投注建议。</p>
+                </div>
+
+            </div>
+        </details>
+    </div>
     <div class="panel" id="section-analysis">
-        <h2>CYBER GANN • 特別號殺號</h2>
-        
+        <h2>數字玄學 - 精準排盤 v14.6</h2>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center;">
+            <span class="sync-tag" id="dataSourceTag">數據：未同步（請點擊雲端同步）</span>
+            <button class="btn-cloud" onclick="syncCloudData()">☁️ 雲端同步</button>
+            <button id="btnVipTop" class="btn-vip-top" onclick="openVipModal('點擊激活 VIP 解鎖高階功能')">🔑 激活 VIP</button>
+        </div>
+
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
             <div style="flex:1; min-width: 280px;">
                 <h3>📅 1. 選擇開獎日期</h3>
                 <input type="date" id="solarDateInput" style="width: 100%;">
             </div>
             <div style="flex:1; min-width: 280px;">
-                <h3>🔢 2. 上期正碼 (6個) + 特別號</h3>
+                <h3>🔢 2. 上期正碼 (6個)</h3>
                 <div class="paste-group">
-                    <input type="text" id="quickPasteInput" placeholder="粘貼 04,11,12,16,38,48 + 22 回車">
+                    <input type="text" id="quickPasteInput" placeholder="粘貼 04,11,12,16,38,48 回車">
                     <button onclick="quickPaste()" class="btn-blue">填入</button>
                 </div>
                 <div class="num-grid">
@@ -339,16 +405,11 @@
                     <input type="number" class="prev-num" placeholder="5" min="1" max="49">
                     <input type="number" class="prev-num" placeholder="6" min="1" max="49">
                 </div>
-                <div class="special-row">
-                    <label for="prevSpecial">🎯 上期特別號：</label>
-                    <input type="number" id="prevSpecial" placeholder="特" min="1" max="49">
-                    <span>用於鄰號抑制與特碼統計</span>
-                </div>
             </div>
         </div>
 
         <div class="mode-selector" style="margin-top: 15px;">
-            <label class="label-A"><input type="checkbox" class="chart-type" value="A" checked> 圖A：范氏固定</label>
+            <label class="label-A"><input type="checkbox" class="chart-type" value="A" checked> 圖A：張氏固定</label>
             <label class="label-B"><input type="checkbox" class="chart-type" value="B" checked> 圖B：江恩動態</label>
             <label class="label-C"><input type="checkbox" class="chart-type" value="C" checked> 圖C：洛書飛星</label>
             <label class="label-D"><input type="checkbox" class="chart-type" value="D" checked> 圖D：九宮幻方</label>
@@ -368,94 +429,31 @@
             <input type="number" id="manualCenter" placeholder="號碼" min="1" max="49" style="width:80px; display:none;">
         </div>
 
-        <div class="kill-controls">
-            <label for="killCount">🔪 殺號數量：</label>
-            <input type="number" id="killCount" value="10" min="1" max="20">
-            
-            <label for="killMode">🧭 殺號邏輯：</label>
-            <select id="killMode">
-                <option value="blindOnly">盲區反選制</option>
-                <option value="score">綜合評分制</option>
-            </select>
-
-            <label style="color:#d8b4fe; cursor:pointer;" title="盲區不足時，寧可少殺也不補位熱區號">
-                <input type="checkbox" id="cfgStrictBlind"> 🛡️ 嚴格盲區
-            </label>
-
-            <input type="text" id="customKillNums" placeholder="自定義殺號，留空自動。例：03,07,12...">
-        </div>
-
         <div class="cfg-panel">
-            <h4 onclick="toggleCfg()">⚙️ 特別號殺號參數設定（點擊展開/收起）</h4>
-            <div id="cfgBody">
+            <h4 onclick="toggleCfg()">⚙️ 全量過濾參數設定（點擊展開/收起）</h4>
+            <div id="cfgBody" style="display:none;">
                 <div class="cfg-grid">
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgBlind" checked>
-                        <label for="cfgBlind">盲區加分</label>
-                        <input type="number" id="cfgBlindW" value="60" min="0" max="200">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgColor" checked>
-                        <label for="cfgColor">特碼波色平衡</label>
-                        <input type="number" id="cfgColorW" value="20" min="0" max="100">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgHeat" checked>
-                        <label for="cfgHeat">特碼短線冷熱</label>
-                        <input type="number" id="cfgHeatW" value="6" min="0" max="50">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgMiss" checked>
-                        <label for="cfgMiss" style="color:var(--danger-neon);">🛡️ 遺漏防爆冷</label>
-                        <input type="number" id="cfgMissW" value="30" min="0" max="200">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgStreak" checked>
-                        <label for="cfgStreak" style="color:var(--primary-neon);">🔄 連黑止損</label>
-                        <input type="number" id="cfgStreakW" value="1" min="1" max="5">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgLongHeat">
-                        <label for="cfgLongHeat">特碼長線冷門</label>
-                        <input type="number" id="cfgLongHeatW" value="10" min="0" max="100">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgIsolated">
-                        <label for="cfgIsolated">圖E孤立紅碼保護</label>
-                        <input type="number" id="cfgIsolatedW" value="150" min="0" max="500">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgHotProtect">
-                        <label for="cfgHotProtect">特碼防連莊</label>
-                        <input type="number" id="cfgHotProtectW" value="80" min="0" max="300">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgNeighbor">
-                        <label for="cfgNeighbor">上期特碼鄰號抑制</label>
-                        <input type="number" id="cfgNeighborW" value="35" min="0" max="200">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgTail">
-                        <label for="cfgTail">特碼熱尾抑制</label>
-                        <input type="number" id="cfgTailW" value="12" min="0" max="100">
-                    </div>
-                    <div class="cfg-item">
-                        <input type="checkbox" id="cfgPrevRepeat">
-                        <label for="cfgPrevRepeat">上期特碼硬排除</label>
-                    </div>
-                    <div class="cfg-item" style="grid-column: 1 / -1;">
-                        <input type="checkbox" id="cfgCombo">
-                        <label for="cfgCombo">組合約束</label>
-                    </div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgBlind" checked><label for="cfgBlind">盲區加分</label><input type="number" id="cfgBlindW" value="60" min="0" max="200"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgColor" checked><label for="cfgColor">波色平衡</label><input type="number" id="cfgColorW" value="30" min="0" max="100"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgHeat" checked><label for="cfgHeat">短線冷熱加權</label><input type="number" id="cfgHeatW" value="9" min="0" max="50"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgMiss" checked><label for="cfgMiss" style="color:#d32f2f;">🛡️ 遺漏防爆冷</label><input type="number" id="cfgMissW" value="50" min="0" max="200"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgStreak" checked><label for="cfgStreak" style="color:#1976d2;">🔄 連黑止損</label><input type="number" id="cfgStreakW" value="1" min="1" max="5"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgLongHeat"><label for="cfgLongHeat">長線冷門加權</label><input type="number" id="cfgLongHeatW" value="15" min="0" max="100"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgIsolated"><label for="cfgIsolated">圖E孤立紅碼保護</label><input type="number" id="cfgIsolatedW" value="150" min="0" max="500"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgHotProtect"><label for="cfgHotProtect">防連莊爆冷保護</label><input type="number" id="cfgHotProtectW" value="100" min="0" max="300"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgNeighbor"><label for="cfgNeighbor">上期鄰號抑制</label><input type="number" id="cfgNeighborW" value="45" min="0" max="200"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgTail"><label for="cfgTail">熱尾抑制</label><input type="number" id="cfgTailW" value="18" min="0" max="100"></div>
+                    <div class="cfg-item"><input type="checkbox" id="cfgPrevRepeat"><label for="cfgPrevRepeat">上期重號硬排除</label></div>
+                    <div class="cfg-item" style="grid-column: 1 / -1;"><input type="checkbox" id="cfgCombo"><label for="cfgCombo">組合約束（平碼專用）</label></div>
                 </div>
             </div>
         </div>
 
-        <button onclick="generateAnalysis()" style="width:100%;" class="btn-highlight">⚡ 執行深層運算與排盤</button>
-        
+        <button onclick="generateAnalysis()" style="width:100%;" class="btn-highlight">⚡ 一鍵分析並生成圖表</button>
+
         <div id="warningInfo" class="warning-info">⚠️ 提示：未輸入上期號碼，圖中不會顯示紅底。</div>
         <div id="calcInfo" class="calc-info"></div>
-        
+
         <div id="filterResultBox" class="filter-result-box">
             🎯 <strong>綜合交叉分析：</strong><br>
             <span id="filterDesc"></span><br>
@@ -464,273 +462,393 @@
         </div>
     </div>
 
-    <!-- 殺號面板 -->
     <div class="kill-box" id="killPanel">
-        <h3>🔪 終極特碼殺號推薦（預測下期不開出）</h3>
-        <div class="special-ref" id="specialRef"></div>
+        <h3 id="killTitle">🔪 本期最強殺號推薦 (平碼五不中)</h3>
+        
+        <div class="kill-mode-switch">
+            <button class="kill-mode-btn active" id="btnModeNormal" onclick="switchKillMode('normal')">杀平码 (固定5码)</button>
+            <button class="kill-mode-btn" id="btnModeSpecial" onclick="switchKillMode('special')">杀特码 (自定义数量)</button>
+        </div>
+        
+        <div id="specialConfigArea" style="display:none; text-align:center; margin-bottom:15px;">
+            <label style="font-weight:bold; color:#e65100;">排除特码数量：</label>
+            <select id="specialKillCount" onchange="updateSpecialKillCount()" style="padding:8px; font-size:15px; font-weight:bold; border:1px solid #ccc; border-radius:6px;">
+                <option value="5">5 个</option>
+                <option value="6">6 个</option>
+                <option value="7">7 个</option>
+                <option value="8">8 个</option>
+                <option value="9">9 个</option>
+                <option value="10" selected>10 个</option>
+                <option value="11">11 个</option>
+                <option value="12">12 个</option>
+                <option value="13">13 个</option>
+                <option value="14">14 个</option>
+                <option value="15">15 个</option>
+            </select>
+        </div>
+
         <div class="kill-desc" id="killDesc"></div>
         <div class="kill-nums-container" id="killNumsContainer"></div>
-        <button class="btn-copy" onclick="copyKillNums()" style="width:100%;">📋 複製本期特碼殺號（含勝率與詳細配置）</button>
+        <button class="btn-orange" onclick="copyKillNums()" style="width:100%;">📋 複製本期殺號（含勝率）</button>
     </div>
 
-    <!-- 歷史與回測區 -->
     <div class="panel" id="section-history">
-        <h3>📊 歷史數據與 AI 基因尋優</h3>
+        <h3>📊 歷史數據與 AI 尋優 <span style="font-size: 11px; color:#d32f2f; font-weight:normal; margin-left: 8px;">🔒 回測/尋優為 VIP 專享</span></h3>
         <div class="history-panel">
-            <div class="history-box">
-                <strong>智能粘貼記錄（6正碼+1特碼）：</strong>
-                <textarea id="importData" placeholder="在此粘貼歷史記錄，每期需包含 7 個號碼（6 正碼 + 1 特碼）..."></textarea>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-blue" onclick="importHistory()" style="flex:1;">導入</button>
-                    <button class="btn-red" onclick="clearHistory()">清空</button>
-                </div>
-            </div>
-            <div class="history-box">
+            <div class="history-box" style="flex: 1;">
                 <strong>已保存記錄 (最新在上，點擊載入)：</strong>
                 <ul class="history-list" id="historyList"></ul>
+                <button class="btn-red" onclick="clearHistory()" style="width:100%; margin-top: 10px; font-size: 13px; padding: 8px;">清空記錄</button>
             </div>
         </div>
 
         <div class="backtest-controls">
-            <label>回測期數：</label>
+            <label style="font-weight:bold; color:#e65100;">回測期數：</label>
             <input type="number" id="backtestPeriods" value="200" min="10" max="1000">
             
-            <label style="margin-left:10px;">AI尋優圖數：</label>
-            <input type="number" id="minChartCount" value="3" min="1" max="7" style="width:50px;" title="最少圖數">
-            <span>至</span>
-            <input type="number" id="maxChartCount" value="5" min="1" max="7" style="width:50px;" title="最多圖數">
-
-            <button class="btn-orange" onclick="runBacktest()" style="padding: 12px 25px;">📊 雙模式對比回測</button>
-            <button class="btn-blue btn-glow" onclick="runAIGridSearch()" style="padding: 12px 25px;">🤖 啟動自動多圖尋優</button>
+            <label style="font-weight:bold; color:#e65100; margin-left: 6px;">圖量區間：</label>
+            <select id="aiComboMin">
+                <option value="1">1 張</option>
+                <option value="2" selected>2 張</option>
+                <option value="3">3 張</option>
+                <option value="4">4 張</option>
+                <option value="5">5 張</option>
+                <option value="6">6 張</option>
+                <option value="7">7 張</option>
+            </select>
+            <span>~</span>
+            <select id="aiComboMax">
+                <option value="1">1 張</option>
+                <option value="2">2 張</option>
+                <option value="3" selected>3 張</option>
+                <option value="4">4 張</option>
+                <option value="5">5 張</option>
+                <option value="6">6 張</option>
+                <option value="7">7 張</option>
+            </select>
+            
+            <button class="btn-orange" onclick="vipRunBacktest()" style="padding: 12px 25px;">📊 常規回測</button>
+            <button class="btn-blue btn-glow" onclick="vipRunAIGridSearch()" style="padding: 12px 25px;">🤖 基因尋優</button>
         </div>
-        
+
         <div class="backtest-box" id="backtestBox">
             <div id="backtestContent"></div>
         </div>
     </div>
 
-    <!-- 圖表容器 -->
     <div class="grids-wrapper" id="gridsContainer"></div>
-    
-    <div class="panel" style="text-align:center;" id="copyAllPanel" >
-        <button class="btn-highlight" onclick="copyText('ALL')">📋 一鍵複製綜合報告（含勝率）</button>
+
+    <div class="panel" style="text-align:center;" id="copyAllPanel">
+        <button class="btn-highlight" onclick="copyText('ALL')">📋 一鍵複製選中圖表與殺號報告（含勝率）</button>
     </div>
-
-    <!-- 新增：更多 / 教程與原理 -->
-    <div class="panel more-section" id="more-section" style="display:none;">
-        <h2>📖 系統指南與玄學原理</h2>
-        
-        <h4>1. 系統操作指南</h4>
-        <ul>
-            <li><strong>數據錄入：</strong>選擇下期開獎日期，並輸入上期的 6 個正碼與 1 個特別號。支持一鍵粘貼（格式：04,11,12,16,38,48 + 22）。</li>
-            <li><strong>圖表選擇：</strong>勾選你要參與計算的陣法。圖表越多，覆蓋率越高，盲區越少。</li>
-            <li><strong>殺號邏輯：</strong>
-                <ul>
-                    <li><span class="highlight-text">盲區反選制：</span>優先殺掉完全沒有落入任何圖表熱區（黃底/藍底）的純盲區號碼。</li>
-                    <li><span class="highlight-text">綜合評分制：</span>綜合計算冷熱、波色、遺漏等分數，取最高分的號碼殺掉。</li>
-                </ul>
-            </li>
-            <li><strong>AI 基因尋優：</strong>點擊後，AI 會自動掃描所有圖表組合與參數搭配，找出歷史勝率最高的組合。點擊「一鍵應用」即可套用該參數。</li>
-            <li><strong>嚴格盲區：</strong>若勾選，當盲區號碼不足設定的殺號數量時，系統寧可少殺，也絕不補位熱區號。若未勾選，則會自動從熱區邊緣補齊。</li>
-        </ul>
-
-        <h4>2. 核心玄學原理</h4>
-        <p><strong>江恩螺旋與洛書飛星：</strong> 數字並非隨機排列。江恩理論認為市場與數字存在幾何與週期關係，透過螺旋四方圖與九宮飛星，可以推演出數字在不同時空的「共振」區域（即圖表中的黃底/藍底）。</p>
-        <p><strong>熱區與盲區：</strong> 當多張不同維度的圖表（如范氏、洛書、太極）交叉比對時，某些號碼會頻繁落於共振區，這些就是「熱區」；而完全未落入任何共振區的，稱為「盲區」。歷史數據顯示，熱區號碼更容易被開出，而盲區號碼則大概率被隱藏。</p>
-        <p><strong>特碼專屬特徵：</strong> 本系統專為「特別號」設計。特碼每期只開 1 個，其冷熱與遺漏規律與平碼完全不同。系統內置了特碼專屬的波色平衡、防連莊（近5期出過不殺）、鄰號抑制（上期特碼的±1不殺）以及防爆冷機制（遺漏超過35期不殺）。</p>
-
-        <h4>3. ⚠️ 免責聲明</h4>
-        <p style="color: var(--danger-neon); font-weight: bold;">本工具僅供數字玄學研究與技術交流，所有勝率數據均基於歷史回測，不代表未來必然發生。彩市有風險，請理性看待，切勿沉迷，量力而行。因使用本工具產生的任何結果，開發者不承擔任何責任。</p>
-    </div>
-
 </div>
 
-<!-- 底部導航 -->
 <nav class="bottom-nav">
-    <a href="#top" class="nav-item" onclick="switchTab('home')"><i>🛸</i><span>首頁</span></a>
-    <a href="#section-analysis" class="nav-item" onclick="switchTab('analysis')"><i>⚙️</i><span>分析區</span></a>
-    <a href="#killPanel" class="nav-item" onclick="switchTab('kill')"><i>🔪</i><span>特碼殺號</span></a>
-    <a href="#section-history" class="nav-item" onclick="switchTab('history')"><i>📊</i><span>數據回測</span></a>
-    <a href="#more-section" class="nav-item" onclick="switchTab('more')"><i>📖</i><span>更多</span></a>
+    <a href="#top" class="nav-item"><i>🏠</i><span>首頁</span></a>
+    <a href="#section-analysis" class="nav-item"><i>⚙️</i><span>分析區</span></a>
+    <a href="#killPanel" class="nav-item"><i>🔪</i><span>殺號預測</span></a>
+    <a href="#section-history" class="nav-item"><i>📊</i><span>數據回測</span></a>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.js"></script>
 <script>
-    // 導航切換邏輯
-    function switchTab(tab) {
-        var moreSec = document.getElementById('more-section');
-        var analysisSec = document.getElementById('section-analysis');
-        var killSec = document.getElementById('killPanel');
-        var historySec = document.getElementById('section-history');
-        var gridsSec = document.getElementById('gridsContainer');
-        var copySec = document.getElementById('copyAllPanel');
+    const API_BASE = 'https://winter-night-ffc5.vivibeauty01.workers.dev';
+    const API_VERIFY_PATH = '/verify';
+    const CLOUD_DATA_URL = 'https://neyetone.github.io/macsha/history.json';
+    const LS_LICENSE_KEY = 'xuanxue_license_v2';
 
-        if (tab === 'more') {
-            moreSec.style.display = 'block';
-            analysisSec.style.display = 'none';
-            killSec.style.display = 'none';
-            historySec.style.display = 'none';
-            gridsSec.style.display = 'none';
-            copySec.style.display = 'none';
-        } else {
-            moreSec.style.display = 'none';
-            analysisSec.style.display = 'block';
-            // 恢復其他元素的顯示狀態（由原有邏輯控制）
-            if (currentResult.killNums && currentResult.killNums.length > 0 && document.getElementById('customKillNums').value === '') {
-                killSec.style.display = 'block';
-            }
-            historySec.style.display = 'block';
-            gridsSec.style.display = 'flex';
-            copySec.style.display = 'block';
-        }
-
-        // 更新導航高亮
-        document.querySelectorAll('.nav-item').forEach(function(el) {
-            el.classList.remove('active');
-        });
-        var links = document.querySelectorAll('.nav-item');
-        for (var i = 0; i < links.length; i++) {
-            if (links[i].getAttribute('href') === '#' + (tab === 'more' ? 'more-section' : (tab === 'home' ? 'top' : 'section-' + tab)) || (tab === 'analysis' && links[i].getAttribute('href') === '#section-analysis')) {
-                links[i].classList.add('active');
-            }
-        }
-    }
-
-    // 原有變數與邏輯
     var shengXiaoMap = { "鼠": 1, "牛": 2, "虎": 3, "兔": 4, "龍": 5, "龙": 5, "蛇": 6, "馬": 7, "马": 7, "羊": 8, "猴": 9, "雞": 10, "鸡": 10, "狗": 11, "豬": 12, "猪": 12 };
     var historyData = JSON.parse(localStorage.getItem('gann_history_pure')) || [];
     var aiBestConfig = JSON.parse(localStorage.getItem('gann_ai_best')) || null;
-    
-    var currentResult = { dateStr: "", timeStr: "", centerNum: 0, prevSpecial: null, chartTypes: [], sets: {}, chartCenters: {}, uniqueNumsMap: {}, commonNums: [], overlapNums: [], killNums: [], killScores: {}, isCustomKill: false, killMode: 'blindOnly', blindCount: 0, fillCount: 0 };
+    var isVipUser = false;
+    var latestCloudRecord = null;
 
-    var currentWinRateInfo = {
-        perfectRate: null, avgHits: null, maxLossStreak: null,
-        perfectKills: null, totalTested: null,
-        source: "未回測", topConfigs: []
-    };
+    var currentKillMode = 'normal'; // normal | special
+
+    var currentResult = { dateStr: "", timeStr: "", centerNum: 0, chartTypes: [], sets: {}, chartCenters: {}, uniqueNumsMap: {}, commonNums: [], overlapNums: [], killNums: [], killScores: {} };
+    var currentWinRateInfo = { perfectRate: null, avgHits: null, maxLossStreak: null, perfectKills: null, totalTested: null, source: "未回測", topConfigs: [] };
 
     var RED_WAVE = [1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46];
     var BLUE_WAVE = [3,4,9,10,14,15,20,25,26,31,36,37,41,42,47,48];
     var GREEN_WAVE = [5,6,11,16,17,21,22,27,28,32,33,38,39,43,44,49];
-    
-    var _cache = { heat: {}, cov: {}, sheat: {}, smiss: {} };
-    
+
+    var _cache = { heat: {}, cov: {} };
+
+    function getWaveClass(num) {
+        if (RED_WAVE.indexOf(num) !== -1) { return 'wave-red'; }
+        if (BLUE_WAVE.indexOf(num) !== -1) { return 'wave-blue'; }
+        return 'wave-green';
+    }
     function getWave(num) {
         if (RED_WAVE.indexOf(num) !== -1) { return 'R'; }
         if (BLUE_WAVE.indexOf(num) !== -1) { return 'B'; }
         if (GREEN_WAVE.indexOf(num) !== -1) { return 'G'; }
         return '';
     }
+    function padZero(n) { return n < 10 ? '0' + n : n.toString(); }
 
-    function getKillCount() {
-        var v = parseInt(document.getElementById('killCount').value);
-        if (isNaN(v) || v < 1) { v = 5; }
-        if (v > 20) { v = 20; }
-        return v;
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.innerText = msg; t.classList.add('show');
+        clearTimeout(t._tm);
+        t._tm = setTimeout(function() { t.classList.remove('show'); }, 2200);
     }
 
-    function getKillMode() {
-        var el = document.getElementById('killMode');
-        if (el) { return el.value; }
-        return 'score';
-    }
+    /* ============ 杀号模式切换 ============ */
+    function switchKillMode(mode) {
+        currentKillMode = mode;
+        var btnN = document.getElementById('btnModeNormal');
+        var btnS = document.getElementById('btnModeSpecial');
+        var cfgArea = document.getElementById('specialConfigArea');
+        var title = document.getElementById('killTitle');
 
-    function getCustomKillNums() {
-        var raw = document.getElementById('customKillNums').value;
-        var nums = [];
-        if (!raw || !raw.trim()) { return nums; }
-        var matches = raw.match(/\d{1,2}/g) || [];
-        matches.forEach(function(t) {
-            var v = parseInt(t);
-            if (v >= 1 && v <= 49 && nums.indexOf(v) === -1) { nums.push(v); }
-        });
-        return nums.sort(function(a, b) { return a - b; });
-    }
-
-    function getWinRateText() {
-        if (currentWinRateInfo.perfectRate === null) {
-            return "🎯 特碼全殺勝率：未回測（建議先跑一次 AI 尋優）";
+        if (mode === 'normal') {
+            btnN.classList.add('active');
+            btnS.classList.remove('active');
+            cfgArea.style.display = 'none';
+            title.innerText = '🔪 本期最強殺號推薦 (平碼五不中)';
+        } else {
+            btnN.classList.remove('active');
+            btnS.classList.add('active');
+            cfgArea.style.display = 'block';
+            title.innerText = '🔪 本期特碼排除推薦 (特碼殺號)';
         }
+        generateAnalysis(); // 切换模式立即重算
+    }
+
+    function updateSpecialKillCount() {
+        if (currentKillMode === 'special') {
+            generateAnalysis();
+        }
+    }
+
+    /* ============ 卡密验证 ============ */
+    function interpretText(text) {
+        var s = String(text == null ? '' : text).trim();
+        if (!s) { return { ok: false, msg: '空響應' }; }
+        var low = s.toLowerCase();
+        if (/不存在|无效|錯誤|错误|失败|失敗|过期|過期|已用|失效|查无|查無|未找到|invalid|not\s*found|expired|denied|fail|error|false/.test(low)) { return { ok: false, msg: s }; }
+        if (/成功|通過|通过|正确|正確|有效|true|success|valid|\bok\b|激活/.test(low)) { return { ok: true, msg: s }; }
+        return { ok: false, msg: s };
+    }
+    function interpretResponse(status, text) {
+        var d = null;
+        try { d = JSON.parse(text); } catch (e) {}
+        if (d && typeof d === 'object') {
+            if (d.ok === true || d.success === true || d.valid === true) { return { ok: true, msg: d.msg || d.message || '' }; }
+            if (d.ok === false || d.success === false || d.valid === false) { return { ok: false, msg: d.msg || d.message || d.error || '' }; }
+            if (d.code === 200 || d.code === 0 || d.code === '200' || d.code === '0') { return { ok: true, msg: d.msg || '' }; }
+            if (typeof d.code === 'number' && d.code >= 400) { return { ok: false, msg: d.msg || d.message || '' }; }
+            if (d.status === 'ok' || d.status === 'success') { return { ok: true, msg: d.msg || '' }; }
+            if (d.status === 'fail' || d.status === 'error') { return { ok: false, msg: d.msg || d.message || '' }; }
+            if (d.result === true) { return { ok: true, msg: '' }; }
+            if (d.result === false) { return { ok: false, msg: '' }; }
+            if (typeof d.result === 'string') { return interpretText(d.result); }
+            var m = d.msg || d.message || d.error || d.err;
+            if (typeof m === 'string' && m) { return interpretText(m); }
+            if (status >= 200 && status < 300) { return { ok: false, msg: '響應格式無法識別' }; }
+            return { ok: false, msg: 'HTTP ' + status };
+        }
+        if (typeof d === 'string') { return interpretText(d); }
+        if (typeof d === 'boolean') { return { ok: d, msg: String(d) }; }
+        if (status >= 200 && status < 300) { return interpretText(text); }
+        return { ok: false, msg: (text || '').slice(0, 200) || ('HTTP ' + status) };
+    }
+    async function verifyLicense(code) {
+        var url = API_BASE + API_VERIFY_PATH + '?key=' + encodeURIComponent(code);
+        var ctrl = new AbortController();
+        var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+        var res, text;
+        try {
+            res = await fetch(url, { method: 'GET', signal: ctrl.signal, cache: 'no-store' });
+            text = await res.text();
+        } catch (e) {
+            clearTimeout(timer);
+            throw e;
+        }
+        clearTimeout(timer);
+        var parsed = interpretResponse(res.status, text);
+        if (!res.ok && !parsed.ok) { throw new Error('HTTP ' + res.status + (parsed.msg ? '：' + parsed.msg : '')); }
+        return parsed;
+    }
+
+    function setVipStatus(msg, type) {
+        var el = document.getElementById('vipStatusLine');
+        el.className = 'vip-gate-status' + (type ? ' ' + type : '');
+        el.innerText = msg || '';
+    }
+    function applyVipUI() {
+        var btn = document.getElementById('btnVipTop');
+        if (isVipUser) {
+            btn.innerText = '✅ VIP 已激活';
+            btn.classList.add('is-vip');
+            btn.onclick = function() { showToast('✅ 您已是 VIP'); };
+        } else {
+            btn.innerText = '🔑 激活 VIP';
+            btn.classList.remove('is-vip');
+            btn.onclick = function() { openVipModal('點擊激活 VIP 解鎖高階功能'); };
+        }
+    }
+    function openVipModal(reason) {
+        document.getElementById('vipGateSub').innerHTML = reason || '此功能為 VIP 專享，請輸入卡密激活';
+        document.getElementById('vipGate').classList.remove('hide');
+        setVipStatus('', '');
+        setTimeout(function() { document.getElementById('licenseInput').focus(); }, 150);
+    }
+    function closeVipModal() {
+        document.getElementById('vipGate').classList.add('hide');
+    }
+    async function doActivate() {
+        var input = document.getElementById('licenseInput');
+        var btn = document.getElementById('btnActivate');
+        var code = input.value.trim();
+        if (!code) { setVipStatus('請輸入卡密', 'err'); return; }
+        btn.disabled = true;
+        btn.innerText = '驗證中...';
+        setVipStatus('正在連接伺服器...', '');
+        try {
+            var r = await verifyLicense(code);
+            if (r.ok) {
+                isVipUser = true;
+                try { localStorage.setItem(LS_LICENSE_KEY, JSON.stringify({ code: code, savedAt: Date.now() })); } catch (e) {}
+                setVipStatus('✅ 激活成功', 'ok');
+                showToast('VIP 激活成功');
+                applyVipUI();
+                setTimeout(function() { closeVipModal(); }, 500);
+            } else {
+                setVipStatus(r.msg || '卡密無效或已過期', 'err');
+            }
+        } catch (err) {
+            setVipStatus('請求失敗：' + err.message, 'err');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '激活 VIP';
+        }
+    }
+    function restoreVip() {
+        var s = null;
+        try { s = JSON.parse(localStorage.getItem(LS_LICENSE_KEY) || 'null'); } catch (e) {}
+        if (!s || !s.code) { return false; }
+        isVipUser = true;
+        applyVipUI();
+        verifyLicense(s.code).then(function(r) {
+            if (!r.ok) {
+                isVipUser = false;
+                try { localStorage.removeItem(LS_LICENSE_KEY); } catch (e) {}
+                applyVipUI();
+                showToast('卡密已失效，請重新激活');
+            }
+        }).catch(function() {});
+        return true;
+    }
+    function requireVip(feature) {
+        if (isVipUser) { return true; }
+        openVipModal('🔒 「' + feature + '」為 VIP 專享功能<br>請輸入卡密激活後使用');
+        return false;
+    }
+
+    /* ============ 云端同步 ============ */
+    async function syncCloudData() {
+        var tag = document.getElementById('dataSourceTag');
+        tag.className = 'sync-tag loading';
+        tag.innerText = '☁️ 正在拉取雲端數據...';
+        try {
+            var res = await fetch(CLOUD_DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
+            if (!res.ok) { throw new Error('HTTP ' + res.status); }
+            var raw = await res.json();
+            var parsed = raw.map(function(x) {
+                var flat = x.flat || x.codes || x.nums || x.numbers || [];
+                var sp = parseInt(x.num || x.number || x.code) || 0;
+                return {
+                    date: (x.date || x.time || x.openTime || "").replace('T', ' ').substring(0, 10),
+                    period: x.period || x.issue || x.expect || '',
+                    nums: flat.slice(0, 6).map(function(n) { return parseInt(n); }).filter(function(n) { return n >= 1 && n <= 49; }),
+                    special: (sp >= 1 && sp <= 49) ? sp : 0
+                };
+            }).filter(function(x) { return x.nums && x.nums.length >= 6; });
+
+            if (parsed.length === 0) { throw new Error('雲端數據格式異常'); }
+
+            var addedCount = 0;
+            parsed.forEach(function(rec) {
+                var dateKey = rec.date || ('期' + rec.period);
+                var exist = historyData.find(function(h) {
+                    return (h.date && h.date === dateKey) || (h.nums.join(',') === rec.nums.join(','));
+                });
+                if (!exist) {
+                    historyData.push({ date: dateKey, nums: rec.nums, special: rec.special }); // 重点：存入特码
+                    addedCount++;
+                }
+            });
+            historyData.sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+            localStorage.setItem('gann_history_pure', JSON.stringify(historyData));
+            renderHistoryList();
+
+            latestCloudRecord = parsed[parsed.length - 1];
+            renderLatestDraw(latestCloudRecord);
+
+            if (latestCloudRecord.date) {
+                document.getElementById('solarDateInput').value = latestCloudRecord.date;
+            }
+            document.querySelectorAll('.prev-num').forEach(function(inp, i) {
+                inp.value = (i < latestCloudRecord.nums.length) ? latestCloudRecord.nums[i] : '';
+            });
+
+            tag.className = 'sync-tag ok';
+            tag.innerText = '✅ 同步 ' + parsed.length + ' 期 | 新增 ' + addedCount + ' 期 | 最新：' + (latestCloudRecord.date || latestCloudRecord.period);
+
+            generateAnalysis();
+        } catch (err) {
+            tag.className = 'sync-tag err';
+            tag.innerText = '❌ 同步失敗：' + err.message;
+            showToast('雲端同步失敗，請稍後重試');
+        }
+    }
+
+    function renderLatestDraw(rec) {
+        var box = document.getElementById('latestDrawBox');
+        if (!rec) { box.style.display = 'none'; return; }
+        box.style.display = 'block';
+        document.getElementById('latestPeriod').innerText = '第 ' + (rec.period || '—') + ' 期 | ' + (rec.date || '');
+        var html = '';
+        rec.nums.forEach(function(num) {
+            html += '<div class="ball-3d ' + getWaveClass(num) + '">' + padZero(num) + '</div>';
+        });
+        if (rec.special > 0) {
+            html += '<span class="plus-sign">+</span><div class="ball-3d ball-special ' + getWaveClass(rec.special) + '">' + padZero(rec.special) + '</div>';
+        }
+        document.getElementById('latestBalls').innerHTML = html;
+    }
+
+    /* ============ 工具 & 算法 ============ */
+    function calcStabilityScore(res) { return res.perfectRate - res.maxLossStreak * 3.0 - res.avgHits * 10.0; }
+    function getWinRateText() {
+        if (currentWinRateInfo.perfectRate === null) { return "🎯 歷史勝率：未回測（建議先跑一次 AI 尋優）"; }
         var w = currentWinRateInfo;
-        return "🎯 特碼全殺勝率：" + w.perfectRate.toFixed(1) + "% (" +
-            w.perfectKills + "/" + w.totalTested + ")" +
-            "\n📉 平均殺錯特碼數：" + w.avgHits.toFixed(2) +
+        return "🎯 歷史勝率：" + w.perfectRate.toFixed(1) + "% (" + w.perfectKills + "/" + w.totalTested + ")" +
+            "\n📉 平均殺錯：" + w.avgHits.toFixed(2) +
             "\n🔥 最大連黑：" + w.maxLossStreak + " 期" +
             "\n📌 數據來源：" + w.source;
     }
-
-    function calcStabilityScore(res) {
-        return res.perfectRate - res.maxLossStreak * 3.0 - res.avgHits * 10.0;
-    }
-
-    function computeVotedKillNums(baseScores, prevSpecial, cfg, coverageCount, isolatedRedNums) {
-        var killCount = (cfg && cfg.killCount) ? cfg.killCount : getKillCount();
-        var excludeForBase = (cfg.excludePrev && prevSpecial) ? [prevSpecial] : [];
-        var baseKill = selectKillByScore(baseScores, excludeForBase, cfg, killCount, coverageCount);
-        
-        if (!currentWinRateInfo.topConfigs || currentWinRateInfo.topConfigs.length === 0) {
-            return baseKill;
-        }
-
+    function computeVotedKillNums(baseScores, prevNums, cfg, coverageCount, isolatedRedNums, killCount) {
+        var baseKill = selectKillNByScore(baseScores, prevNums, cfg, killCount);
+        if (!currentWinRateInfo.topConfigs || currentWinRateInfo.topConfigs.length === 0) { return baseKill; }
         var votes = {}, scoreSum = {};
         baseKill.forEach(function(n) { votes[n] = (votes[n] || 0) + 2; });
-        for (var n in baseScores) {
-            scoreSum[n] = baseScores[n] * 2;
-        }
-
+        for (var n in baseScores) { scoreSum[n] = baseScores[n] * 2; }
         currentWinRateInfo.topConfigs.forEach(function(tc) {
-            var missCount = getSpecialMissCount(historyData.length - 1);
-            var s = computeSpecialKillScores(coverageCount, prevSpecial, isolatedRedNums, historyData, historyData.length - 1, tc.cfg, missCount);
-            var k = selectKillByScore(s, excludeForBase, cfg, killCount, coverageCount);
-            
+            var missCount = getMissCount(historyData.length - 1);
+            var s = computeKillScores(coverageCount, prevNums, isolatedRedNums, historyData, historyData.length - 1, tc.cfg, missCount);
+            var k = selectKillNByScore(s, prevNums, tc.cfg, killCount);
             k.forEach(function(num) {
                 votes[num] = (votes[num] || 0) + 1;
                 scoreSum[num] = (scoreSum[num] || 0) + (s[num] || 0);
             });
         });
-
         var excludeSet = {};
-        if (cfg.excludePrev && prevSpecial) {
-            excludeSet[prevSpecial] = true;
-        }
-        
+        if (cfg.excludePrev) { prevNums.forEach(function(n) { excludeSet[n] = true; }); }
         var pool = [];
-        for (var i = 1; i <= 49; i++) {
-            if (excludeSet[i]) {
-                continue;
-            }
-            
-            if (cfg.killMode === 'blindOnly' && cfg.strictBlind && coverageCount) {
-                if (coverageCount[i] !== 0) {
-                    continue;
-                }
-            } else if (cfg.killMode === 'blindOnly' && coverageCount) {
-                if (coverageCount[i] > 1) {
-                    continue;
-                }
-            }
-            
-            pool.push(i);
-        }
-        
-        if (cfg.killMode === 'blindOnly' && cfg.strictBlind) {
-            var validBaseKill = baseKill.filter(function(x) { return coverageCount[x] === 0; });
-            if (validBaseKill.length < killCount) {
-                return validBaseKill.slice(0, killCount).sort(function(a, b) { return a - b; });
-            }
-        } else {
-            if (pool.length < killCount) {
-                for (var i2 = 1; i2 <= 49; i2++) {
-                    if (excludeSet[i2]) {
-                        continue;
-                    }
-                    if (pool.indexOf(i2) === -1) {
-                        pool.push(i2);
-                    }
-                }
-            }
-        }
-
+        for (var i = 1; i <= 49; i++) { if (!excludeSet[i]) { pool.push(i); } }
         pool.sort(function(a, b) {
             var va = votes[a] || 0, vb = votes[b] || 0;
             if (vb !== va) { return vb - va; }
@@ -738,102 +856,68 @@
             if (sb !== sa) { return sb - sa; }
             return a - b;
         });
-        
         var votedKill = pool.slice(0, killCount).sort(function(a, b) { return a - b; });
-
         var diff = votedKill.filter(function(x) { return baseKill.indexOf(x) === -1; }).length;
-        var fallbackThreshold = Math.ceil(killCount * 0.8);
-        
-        if (diff >= fallbackThreshold) {
-            return baseKill;
-        } else {
-            return votedKill;
-        }
+        return (diff >= killCount - 1) ? baseKill : votedKill; // 如果差异过大，沿用基础杀号
     }
-
     function toggleCfg() {
         var b = document.getElementById('cfgBody');
-        if (b.style.display === 'none') {
-            b.style.display = 'block';
-        } else {
-            b.style.display = 'none';
-        }
+        b.style.display = (b.style.display === 'none' || b.style.display === '') ? 'block' : 'none';
     }
-
     function getFilterConfig() {
         function ck(id) { var e = document.getElementById(id); return e && e.checked; }
         function vl(id, dft) { var e = document.getElementById(id); if (!e) { return dft; } var v = parseFloat(e.value); return isNaN(v) ? dft : v; }
         return {
             blind: ck('cfgBlind') ? vl('cfgBlindW', 60) : 0,
-            colorW: ck('cfgColor') ? vl('cfgColorW', 20) : 0,
-            heatW: ck('cfgHeat') ? vl('cfgHeatW', 6) : 0,
-            missW: ck('cfgMiss') ? vl('cfgMissW', 30) : 0,
+            colorW: ck('cfgColor') ? vl('cfgColorW', 30) : 0,
+            heatW: ck('cfgHeat') ? vl('cfgHeatW', 9) : 0,
+            missW: ck('cfgMiss') ? vl('cfgMissW', 50) : 0,
             streakW: ck('cfgStreak') ? vl('cfgStreakW', 1) : 0,
-            longHeatW: ck('cfgLongHeat') ? vl('cfgLongHeatW', 10) : 0,
+            longHeatW: ck('cfgLongHeat') ? vl('cfgLongHeatW', 15) : 0,
             isolatedW: ck('cfgIsolated') ? vl('cfgIsolatedW', 150) : 0,
-            hotProtectW: ck('cfgHotProtect') ? vl('cfgHotProtectW', 80) : 0,
-            neighborW: ck('cfgNeighbor') ? vl('cfgNeighborW', 35) : 0,
-            tailW: ck('cfgTail') ? vl('cfgTailW', 12) : 0,
+            hotProtectW: ck('cfgHotProtect') ? vl('cfgHotProtectW', 100) : 0,
+            neighborW: ck('cfgNeighbor') ? vl('cfgNeighborW', 45) : 0,
+            tailW: ck('cfgTail') ? vl('cfgTailW', 18) : 0,
             excludePrev: ck('cfgPrevRepeat'),
-            combo: ck('cfgCombo'),
-            killCount: getKillCount(),
-            killMode: getKillMode(),
-            strictBlind: document.getElementById('cfgStrictBlind').checked
+            combo: ck('cfgCombo')
         };
     }
-
     function setFilterConfig(cfg) {
-        document.getElementById('cfgBlind').checked = cfg.blind > 0;
-        if(cfg.blind > 0) { document.getElementById('cfgBlindW').value = cfg.blind; }
-        document.getElementById('cfgColor').checked = cfg.colorW > 0;
-        if(cfg.colorW > 0) { document.getElementById('cfgColorW').value = cfg.colorW; }
-        document.getElementById('cfgHeat').checked = cfg.heatW > 0;
-        if(cfg.heatW > 0) { document.getElementById('cfgHeatW').value = cfg.heatW; }
-        document.getElementById('cfgMiss').checked = cfg.missW > 0;
-        if(cfg.missW > 0) { document.getElementById('cfgMissW').value = cfg.missW; }
-        document.getElementById('cfgStreak').checked = cfg.streakW > 0;
-        if(cfg.streakW > 0) { document.getElementById('cfgStreakW').value = cfg.streakW; }
-        document.getElementById('cfgLongHeat').checked = cfg.longHeatW > 0;
-        if(cfg.longHeatW > 0) { document.getElementById('cfgLongHeatW').value = cfg.longHeatW; }
-        document.getElementById('cfgIsolated').checked = cfg.isolatedW > 0;
-        if(cfg.isolatedW > 0) { document.getElementById('cfgIsolatedW').value = cfg.isolatedW; }
-        document.getElementById('cfgHotProtect').checked = cfg.hotProtectW > 0;
-        if(cfg.hotProtectW > 0) { document.getElementById('cfgHotProtectW').value = cfg.hotProtectW; }
-        document.getElementById('cfgNeighbor').checked = cfg.neighborW > 0;
-        if(cfg.neighborW > 0) { document.getElementById('cfgNeighborW').value = cfg.neighborW; }
-        document.getElementById('cfgTail').checked = cfg.tailW > 0;
-        if(cfg.tailW > 0) { document.getElementById('cfgTailW').value = cfg.tailW; }
-        document.getElementById('cfgPrevRepeat').checked = cfg.excludePrev || false;
-        document.getElementById('cfgCombo').checked = cfg.combo || false;
-        if (cfg.killMode) { document.getElementById('killMode').value = cfg.killMode; }
-        // 嚴格盲區解耦：不強制覆蓋用戶的勾選狀態
-        // if (typeof cfg.strictBlind !== 'undefined') { document.getElementById('cfgStrictBlind').checked = cfg.strictBlind; }
-        
-        generateAnalysis();
-        alert("✅ 已成功應用該策略參數！");
+        function s(id, v) { var e = document.getElementById(id); if (e) { e.checked = v; } }
+        function w(id, v) { var e = document.getElementById(id); if (e) { e.value = v; } }
+        s('cfgBlind', cfg.blind > 0); w('cfgBlindW', cfg.blind || 60);
+        s('cfgColor', cfg.colorW > 0); w('cfgColorW', cfg.colorW || 30);
+        s('cfgHeat', cfg.heatW > 0); w('cfgHeatW', cfg.heatW || 9);
+        s('cfgMiss', cfg.missW > 0); w('cfgMissW', cfg.missW || 50);
+        s('cfgStreak', cfg.streakW > 0); w('cfgStreakW', cfg.streakW || 1);
+        s('cfgLongHeat', cfg.longHeatW > 0); w('cfgLongHeatW', cfg.longHeatW || 15);
+        s('cfgIsolated', cfg.isolatedW > 0); w('cfgIsolatedW', cfg.isolatedW || 150);
+        s('cfgHotProtect', cfg.hotProtectW > 0); w('cfgHotProtectW', cfg.hotProtectW || 100);
+        s('cfgNeighbor', cfg.neighborW > 0); w('cfgNeighborW', cfg.neighborW || 45);
+        s('cfgTail', cfg.tailW > 0); w('cfgTailW', cfg.tailW || 18);
+        s('cfgPrevRepeat', cfg.excludePrev || false);
+        s('cfgCombo', cfg.combo || false);
     }
 
-    // 以下為所有圖表生成、運算、UI 渲染、回測與尋優代碼，邏輯與 v14.7 完全一致
+    /* 7 种阵法 */
     function generateStandardGannGrid() {
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
         var r = 3, c = 3, num = 1, step = 1, dir = 0;
         var dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
         grid[r][c] = 1;
         while (num < 49) {
-            for (var i = 0; i < 2; i += 1) {
-                for (var j = 0; j < step; j += 1) {
+            for (var i = 0; i < 2; i++) {
+                for (var j = 0; j < step; j++) {
                     if (num >= 49) { break; }
-                    r += dirs[dir][0]; c += dirs[dir][1]; num += 1;
+                    r += dirs[dir][0]; c += dirs[dir][1]; num++;
                     if (r >= 0 && r < 7 && c >= 0 && c < 7) { grid[r][c] = num; }
                 }
-                dir = (dir + 1) % 4; 
-                if (num >= 49) { break; }
+                dir = (dir + 1) % 4; if (num >= 49) { break; }
             }
-            step += 1;
+            step++;
         }
         return grid;
     }
-
     function generateDynamicGannGrid(centerNum) {
         if (isNaN(centerNum)) { centerNum = 1; }
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
@@ -841,30 +925,24 @@
         var dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
         var num = centerNum; grid[r][c] = num; var count = 1;
         while (count < 49) {
-            for (var i = 0; i < 2; i += 1) {
-                for (var j = 0; j < step; j += 1) {
+            for (var i = 0; i < 2; i++) {
+                for (var j = 0; j < step; j++) {
                     if (count >= 49) { break; }
-                    r += dirs[dir][0]; c += dirs[dir][1]; num += 1;
+                    r += dirs[dir][0]; c += dirs[dir][1]; num++;
                     if (num > 49) { num = 1; }
                     if (r >= 0 && r < 7 && c >= 0 && c < 7) { grid[r][c] = num; }
-                    count += 1;
+                    count++;
                 }
-                dir = (dir + 1) % 4; 
-                if (count >= 49) { break; }
+                dir = (dir + 1) % 4; if (count >= 49) { break; }
             }
-            step += 1;
+            step++;
         }
         return grid;
     }
-
     function generateLuoshuGrid(centerNum) {
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
         var coords = [];
-        for (var r = 0; r < 7; r++) {
-            for (var c = 0; c < 7; c++) {
-                coords.push({ r: r, c: c, dist: Math.max(Math.abs(r - 3), Math.abs(c - 3)) });
-            }
-        }
+        for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { coords.push({ r: r, c: c, dist: Math.max(Math.abs(r - 3), Math.abs(c - 3)) }); } }
         coords.sort(function(a, b) {
             if (a.dist !== b.dist) { return a.dist - b.dist; }
             var angleA = Math.atan2(a.r - 3, a.c - 3);
@@ -872,69 +950,62 @@
             return (a.dist % 2 === 1) ? angleA - angleB : angleB - angleA;
         });
         var num = centerNum;
-        for (var i = 0; i < coords.length; i++) { 
-            grid[coords[i].r][coords[i].c] = num; 
-            num += 1; 
-            if (num > 49) { num = 1; }
-        }
+        for (var i = 0; i < coords.length; i++) { grid[coords[i].r][coords[i].c] = num; num++; if (num > 49) { num = 1; } }
         return grid;
     }
-
     function generateMagicGrid(centerNum) {
         var baseMagic = [
             [30, 39, 48, 1, 10, 19, 28],[38, 47, 7, 9, 18, 27, 29],[46, 6, 8, 17, 26, 35, 37],
             [5, 14, 16, 25, 34, 36, 45],[13, 15, 24, 33, 42, 44, 4],[21, 23, 32, 41, 43, 3, 12],[22, 31, 40, 49, 2, 11, 20]
         ];
-        var offset = centerNum - 25; 
+        var offset = centerNum - 25;
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
-        for(var r=0; r<7; r++) {
-            for(var c=0; c<7; c++) {
-                grid[r][c] = (baseMagic[r][c] - 1 + offset + 49) % 49 + 1;
-            }
-        }
+        for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { grid[r][c] = (baseMagic[r][c] - 1 + offset + 49) % 49 + 1; } }
         return grid;
     }
-
     function generateTaijiGrid(centerNum) {
+        if(isNaN(centerNum) || centerNum < 1 || centerNum > 49) { centerNum = 1; }
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
         var r = 3, c = 3, step = 1, dir = 0;
         var dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-        var num = centerNum; grid[r][c] = num; var count = 1;
-        while (count < 49) {
-            for (var i = 0; i < 2; i += 1) {
-                for (var j = 0; j < step; j += 1) {
-                    if (count >= 49) { break; }
+        
+        var path = [];
+        path.push({r: 3, c: 3});
+        while (path.length < 49) {
+            for (var i = 0; i < 2; i++) {
+                for (var j = 0; j < step; j++) {
+                    if (path.length >= 49) { break; }
                     r += dirs[dir][0]; c += dirs[dir][1];
-                    num += 2; 
-                    if (num > 49) { num = num % 2 === 0 ? 2 : 1; }
-                    if (r >= 0 && r < 7 && c >= 0 && c < 7 && grid[r][c] === 0) { grid[r][c] = num; }
-                    count += 1;
+                    if (r >= 0 && r < 7 && c >= 0 && c < 7) { path.push({r: r, c: c}); }
                 }
-                dir = (dir + 1) % 4; 
-                if (count >= 49) { break; }
+                dir = (dir + 1) % 4;
+                if (path.length >= 49) { break; }
             }
-            step += 1;
+            step++;
         }
-        var flat = []; 
-        for(var i=1;i<=49;i++) { 
-            if(grid.flat().indexOf(i)===-1) { flat.push(i); }
+
+        var evenSeq = [], oddSeq = [];
+        for (var i = 1; i <= 49; i++) {
+            if (i % 2 === 0) { evenSeq.push(i); }
+            else { oddSeq.push(i); }
         }
-        for(var r2=0; r2<7; r2++) {
-            for(var c2=0; c2<7; c2++) {
-                if(grid[r2][c2]===0) { grid[r2][c2] = flat.pop() || 1; }
-            }
-        }
+        
+        var isEven = (centerNum % 2 === 0);
+        var arr1 = isEven ? evenSeq : oddSeq;
+        var arr2 = isEven ? oddSeq : evenSeq;
+        var start1 = arr1.indexOf(centerNum);
+        
+        var seq1 = [];
+        for (var i = 0; i < arr1.length; i++) { seq1.push(arr1[(start1 + i) % arr1.length]); }
+        var finalSeq = seq1.concat(arr2);
+
+        for (var i = 0; i < 49; i++) { grid[path[i].r][path[i].c] = finalSeq[i]; }
         return grid;
     }
-
     function generateWuxingGrid(centerNum) {
         var grid = Array.from({ length: 7 }, function() { return Array(7).fill(0); });
         var coords = [];
-        for (var r = 0; r < 7; r++) {
-            for (var c = 0; c < 7; c++) {
-                coords.push({ r: r, c: c, dist: Math.max(Math.abs(r - 3), Math.abs(c - 3)) });
-            }
-        }
+        for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { coords.push({ r: r, c: c, dist: Math.max(Math.abs(r - 3), Math.abs(c - 3)) }); } }
         coords.sort(function(a, b) {
             if (a.dist !== b.dist) { return a.dist - b.dist; }
             var angleA = Math.atan2(a.r - 3, a.c - 3);
@@ -942,14 +1013,9 @@
             return angleA - angleB;
         });
         var num = centerNum;
-        for (var i = 0; i < coords.length; i++) { 
-            grid[coords[i].r][coords[i].c] = num; 
-            num += 1; 
-            if (num > 49) { num = 1; }
-        }
+        for (var i = 0; i < coords.length; i++) { grid[coords[i].r][coords[i].c] = num; num++; if (num > 49) { num = 1; } }
         return grid;
     }
-
     function isJiugongConnected(val, centerNum) {
         if (val === centerNum) { return false; }
         if (val % 10 === centerNum % 10) { return true; }
@@ -957,17 +1023,15 @@
         if (val + centerNum === 51 || val + centerNum === 50) { return true; }
         return false;
     }
-
     function generateFanGrid() {
         return [
             [28, 19, 10, 1, 48, 39, 30],[29, 27, 18, 9, 7, 47, 38],[37, 35, 26, 17, 8, 6, 46],
             [45, 36, 34, 25, 16, 14, 5],[4, 44, 42, 33, 24, 15, 13],[12, 3, 43, 41, 32, 23, 21],[20, 11, 2, 49, 40, 31, 22]
         ];
     }
-
     function getCenterNum(dateStr, divisor) {
         var parts = dateStr.split('-');
-        if(parts.length === 1 && dateStr.length === 8) { parts = [dateStr.substring(0,4), dateStr.substring(4,6), dateStr.substring(6,8)]; }
+        if (parts.length === 1 && dateStr.length === 8) { parts = [dateStr.substring(0, 4), dateStr.substring(4, 6), dateStr.substring(6, 8)]; }
         var y = parseInt(parts[0]), m = parseInt(parts[1]), d = parseInt(parts[2]);
         if (isNaN(y) || isNaN(m) || isNaN(d)) { return { center: 1, lunarInfo: "日期解析錯誤", yNum: 1, m: 1, d: 1, sum: 3, rem: 1 }; }
         var solar = Solar.fromYmd(y, m, d);
@@ -975,7 +1039,7 @@
         var yearStr = lunar.getYearShengXiao();
         var lunarMonth = Math.abs(lunar.getMonth());
         var lunarDay = lunar.getDay();
-        var yNum = shengXiaoMap[yearStr] || 1; 
+        var yNum = shengXiaoMap[yearStr] || 1;
         var sum = yNum + lunarMonth + lunarDay;
         var rem = sum % divisor;
         var center = (rem === 0) ? divisor : rem;
@@ -987,33 +1051,25 @@
     document.getElementById('modInput').addEventListener('change', function() {
         document.getElementById('manualCenter').style.display = (this.value === 'custom_center') ? 'block' : 'none';
     });
-    document.getElementById('quickPasteInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') { quickPaste(); } });
-    window.onload = function() { generateAnalysis(); };
+    document.getElementById('quickPasteInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') { quickPaste(); } });
 
     function quickPaste() {
         var text = document.getElementById('quickPasteInput').value;
         if (!text) { return; }
-        var raw = text.match(/\d{1,2}/g);
-        if (!raw || raw.length === 0) { return; }
-
-        var validNums = [];
-        raw.forEach(function(t) {
-            var v = parseInt(t);
-            if (v >= 1 && v <= 49 && validNums.indexOf(v) === -1) { validNums.push(v); }
-        });
-
-        var inputs = document.querySelectorAll('.prev-num');
-        inputs.forEach(function(input, idx) {
-            input.value = (idx < validNums.length && idx < 6) ? validNums[idx] : '';
-        });
-
-        var specialInput = document.getElementById('prevSpecial');
-        specialInput.value = (validNums.length >= 7) ? validNums[6] : '';
-
-        document.getElementById('quickPasteInput').value = '';
-        generateAnalysis();
+        var nums = text.match(/\d{1,2}/g);
+        if (nums && nums.length > 0) {
+            var inputs = document.querySelectorAll('.prev-num');
+            var validCount = 0;
+            inputs.forEach(function(input, idx) {
+                if (idx < nums.length && validCount < 6) {
+                    var num = parseInt(nums[idx]);
+                    if (num >= 1 && num <= 49) { input.value = num; validCount++; } else { input.value = ''; }
+                } else { input.value = ''; }
+            });
+            document.getElementById('quickPasteInput').value = '';
+            generateAnalysis();
+        }
     }
-
     function getPrevNums() {
         var nums = [];
         document.querySelectorAll('.prev-num').forEach(function(input) {
@@ -1022,65 +1078,54 @@
         });
         return nums;
     }
-
-    function getPrevSpecial() {
-        var v = parseInt(document.getElementById('prevSpecial').value);
-        return (v >= 1 && v <= 49) ? v : null;
-    }
-
-    function getSpecialMissCount(endIdx) {
-        var key = 'smiss_' + endIdx;
-        if (_cache.smiss[key]) { return _cache.smiss[key]; }
+    function getMissCount(endIdx) {
+        var key = 'miss_' + endIdx;
+        if (_cache.heat[key]) { return _cache.heat[key]; }
         var miss = {};
-        for (var n = 1; n <= 49; n++) { miss[n] = 0; }
-        for (var n2 = 1; n2 <= 49; n2++) {
-            for (var k = endIdx; k >= Math.max(0, endIdx - 120); k--) {
-                var sp = historyData[k].special;
-                if (sp == null) { continue; }
-                if (sp !== n2) { miss[n2]++; }
+        for (var n = 1; n <= 49; n++) {
+            miss[n] = 0;
+            for (var k = endIdx; k >= Math.max(0, endIdx - 30); k--) {
+                if (historyData[k].nums.indexOf(n) === -1) { miss[n]++; }
                 else { break; }
             }
         }
-        _cache.smiss[key] = miss;
+        _cache.heat[key] = miss;
         return miss;
     }
-
-    function getSpecialHeatCache(endIdx) {
-        var key = 'sheat_' + endIdx;
-        if (_cache.sheat[key]) { return _cache.sheat[key]; }
-        var heat20 = {}, heat10 = {}, heat5 = {}, tailHeat10 = {}, colorHeat10 = { R: 0, B: 0, G: 0 };
-        for (var n = 1; n <= 49; n++) { heat20[n] = 0; heat10[n] = 0; heat5[n] = 0; }
-        for (var t = 0; t < 10; t++) { tailHeat10[t] = 0; }
-        var start20 = Math.max(0, endIdx - 19);
-        for (var i = start20; i <= endIdx; i++) {
-            var sp = historyData[i].special;
-            if (sp == null) { continue; }
-            heat20[sp]++;
-            if (i >= endIdx - 9) {
-                heat10[sp]++;
-                tailHeat10[sp % 10]++;
-                var w = getWave(sp);
-                if (w) { colorHeat10[w]++; }
-            }
-            if (i >= endIdx - 4) { heat5[sp]++; }
-        }
-        var data = { heat20: heat20, heat10: heat10, heat5: heat5, tailHeat10: tailHeat10, colorHeat10: colorHeat10 };
-        _cache.sheat[key] = data;
-        return data;
-    }
-
-    function computeSpecialKillScores(coverageCount, prevSpecial, isolatedRedNums, hist, endIdx, cfg, missCount) {
+    function computeKillScores(coverageCount, prevNums, isolatedRedNums, hist, endIdx, cfg, missCount) {
         var scores = {};
-        var hd = getSpecialHeatCache(endIdx);
-        var heat20 = hd.heat20, heat10 = hd.heat10, heat5 = hd.heat5, tailHeat10 = hd.tailHeat10, colorHeat10 = hd.colorHeat10;
-
-        var neighborSet = {};
-        if (prevSpecial != null) {
-            if (prevSpecial - 1 >= 1) { neighborSet[prevSpecial - 1] = true; }
-            if (prevSpecial + 1 <= 49) { neighborSet[prevSpecial + 1] = true; }
+        var key = 'heat_' + endIdx;
+        var heatData = _cache.heat[key];
+        if (!heatData) {
+            var heat20 = {}, heat10 = {}, heat5 = {}, tailHeat10 = {};
+            var colorHeat10 = { R: 0, B: 0, G: 0 };
+            for (var k = 0; k < 10; k++) { tailHeat10[k] = 0; }
+            for (var n = 1; n <= 49; n++) { heat20[n] = 0; heat10[n] = 0; heat5[n] = 0; }
+            var start20 = Math.max(0, endIdx - 19);
+            for (var i = start20; i <= endIdx; i++) {
+                var ns = hist[i].nums;
+                for (var j = 0; j < ns.length; j++) {
+                    heat20[ns[j]]++;
+                    if (i >= endIdx - 9) {
+                        heat10[ns[j]]++;
+                        tailHeat10[ns[j] % 10]++;
+                        var w = getWave(ns[j]);
+                        if (w) { colorHeat10[w]++; }
+                    }
+                    if (i >= endIdx - 4) { heat5[ns[j]]++; }
+                }
+            }
+            heatData = { heat20: heat20, heat10: heat10, heat5: heat5, tailHeat10: tailHeat10, colorHeat10: colorHeat10 };
+            _cache.heat[key] = heatData;
         }
+        var heat20 = heatData.heat20, heat10 = heatData.heat10, heat5 = heatData.heat5, tailHeat10 = heatData.tailHeat10, colorHeat10 = heatData.colorHeat10;
+        var prevSet = {}, neighborSet = {};
+        prevNums.forEach(function(pn) {
+            prevSet[pn] = true;
+            if (pn - 1 >= 1) { neighborSet[pn - 1] = true; }
+            if (pn + 1 <= 49) { neighborSet[pn + 1] = true; }
+        });
         var hasIsolated = isolatedRedNums && typeof isolatedRedNums.has === 'function';
-
         for (var num = 1; num <= 49; num++) {
             var s = 0;
             if (cfg.blind > 0) {
@@ -1090,16 +1135,17 @@
             }
             if (cfg.colorW > 0) {
                 var w = getWave(num);
-                if (w === 'R' && colorHeat10.R >= 5) { s -= cfg.colorW; }
-                if (w === 'B' && colorHeat10.B >= 5) { s -= cfg.colorW; }
-                if (w === 'G' && colorHeat10.G >= 5) { s -= cfg.colorW; }
+                if (w === 'R' && colorHeat10.R >= 25) { s -= cfg.colorW; }
+                if (w === 'B' && colorHeat10.B >= 25) { s -= cfg.colorW; }
+                if (w === 'G' && colorHeat10.G >= 25) { s -= cfg.colorW; }
             }
             if (cfg.isolatedW > 0 && hasIsolated && isolatedRedNums.has(num)) { s -= cfg.isolatedW; }
-            if (cfg.neighborW > 0 && neighborSet[num]) { s -= cfg.neighborW; }
+            if (cfg.neighborW > 0 && neighborSet[num] && !prevSet[num]) { s -= cfg.neighborW; }
             if (cfg.tailW > 0) {
-                if (tailHeat10[num % 10] >= 2) { s -= cfg.tailW; }
+                if (tailHeat10[num % 10] >= 4) { s -= cfg.tailW; }
+                else if (tailHeat10[num % 10] >= 3) { s -= cfg.tailW * 0.55; }
             }
-            if (cfg.hotProtectW > 0 && heat5[num] >= 1) { s -= cfg.hotProtectW; }
+            if (cfg.hotProtectW > 0 && heat5[num] >= 2) { s -= cfg.hotProtectW; }
             if (cfg.heatW > 0) {
                 s -= heat10[num] * cfg.heatW;
                 s -= heat5[num] * (cfg.heatW * 0.65);
@@ -1109,70 +1155,26 @@
                 if (heat20[num] === 0) { s += cfg.longHeatW; }
                 else { s -= heat20[num] * (cfg.longHeatW * 0.2); }
             }
-            if (cfg.missW > 0 && missCount && missCount[num] >= 35) {
-                s -= cfg.missW;
-            }
+            if (cfg.missW > 0 && missCount && missCount[num] >= 15) { s -= cfg.missW; }
             scores[num] = s;
         }
         return scores;
     }
-
-    function selectKillByScore(scores, prevNums, cfg, count, coverageCount) {
-        count = parseInt(count) || 5;
-        if (count < 1) { count = 1; }
-        if (count > 20) { count = 20; }
-
+    
+    // 改造：支持杀 N 个号码
+    function selectKillNByScore(scores, prevNums, cfg, killCount) {
         var excludeSet = {};
-        if (cfg.excludePrev) {
-            prevNums.forEach(function(n) { excludeSet[n] = true; });
-        }
-
+        if (cfg.excludePrev) { prevNums.forEach(function(n) { excludeSet[n] = true; }); }
         var pool = [];
-        var blindMode = (cfg.killMode === 'blindOnly') && coverageCount;
-
-        if (blindMode) {
-            for (var n = 1; n <= 49; n++) {
-                if (excludeSet[n]) { continue; }
-                if (coverageCount[n] === 0) { pool.push(n); }
-            }
-            
-            if (cfg.strictBlind && pool.length <= count) {
-                return pool.slice(0, count).sort(function(a, b) { return a - b; });
-            }
-
-            if (pool.length < count) {
-                for (var n2 = 1; n2 <= 49; n2++) {
-                    if (excludeSet[n2] || coverageCount[n2] === 0) { continue; }
-                    if (coverageCount[n2] === 1) { pool.push(n2); }
-                }
-            }
-            
-            if (pool.length < count) {
-                for (var n3 = 1; n3 <= 49; n3++) {
-                    if (excludeSet[n3] || coverageCount[n3] <= 1) { continue; }
-                    if (coverageCount[n3] === 2) { pool.push(n3); }
-                }
-            }
-            
-            if (pool.length < count) {
-                for (var n4 = 1; n4 <= 49; n4++) {
-                    if (excludeSet[n4]) { continue; }
-                    if (pool.indexOf(n4) === -1) { pool.push(n4); }
-                }
-            }
-        } else {
-            for (var n5 = 1; n5 <= 49; n5++) { 
-                if (!excludeSet[n5]) { pool.push(n5); }
-            }
+        for (var n = 1; n <= 49; n++) { if (!excludeSet[n]) { pool.push(n); } }
+        pool.sort(function(a, b) { if (scores[b] !== scores[a]) { return scores[b] - scores[a]; } return a - b; });
+        
+        // 特码杀号不需要形态约束，直接取分数最高的 N 个
+        if (!cfg.combo || currentKillMode === 'special') { 
+            return pool.slice(0, killCount).sort(function(a, b) { return a - b; }); 
         }
-
-        pool.sort(function(a, b) { 
-            if (scores[b] !== scores[a]) { return scores[b] - scores[a]; }
-            return a - b; 
-        });
-
-        if (!cfg.combo) { return pool.slice(0, count).sort(function(a, b) { return a - b; }); }
-
+        
+        // 平码的形态约束
         function zoneOf(x) { return Math.min(3, Math.floor((x - 1) / 12)); }
         function tailOf(x) { return x % 10; }
         function canAdd(x, sel, level) {
@@ -1187,35 +1189,25 @@
             });
             if ((zc[zoneOf(x)] || 0) >= 2) { return false; }
             if ((tc[tailOf(x)] || 0) >= 2) { return false; }
-            var half = Math.ceil(count * 0.6);
-            if (x % 2 === 1 && oddC >= half) { return false; }
-            if (x % 2 === 0 && evenC >= half) { return false; }
-            if (level <= 1 && (roadC[x % 3] || 0) >= half) { return false; }
-            if (level === 0) {
-                for (var k = 0; k < sel.length; k++) { 
-                    if (Math.abs(sel[k] - x) === 1) { return false; }
-                }
-            }
+            if (x % 2 === 1 && oddC >= 3) { return false; }
+            if (x % 2 === 0 && evenC >= 3) { return false; }
+            if (level <= 1 && (roadC[x % 3] || 0) >= 3) { return false; }
+            if (level === 0) { for (var k = 0; k < sel.length; k++) { if (Math.abs(sel[k] - x) === 1) { return false; } } }
             return true;
         }
         var sel = [];
-        for (var lv = 0; lv <= 3 && sel.length < count; lv++) {
-            for (var p = 0; p < pool.length && sel.length < count; p++) {
+        for (var lv = 0; lv <= 3 && sel.length < killCount; lv++) {
+            for (var p = 0; p < pool.length && sel.length < killCount; p++) {
                 if (canAdd(pool[p], sel, lv)) { sel.push(pool[p]); }
-            }
-        }
-        if (sel.length < count && !cfg.strictBlind) {
-            for (var p2 = 0; p2 < pool.length && sel.length < count; p2++) {
-                if (sel.indexOf(pool[p2]) === -1) { sel.push(pool[p2]); }
             }
         }
         return sel.sort(function(a, b) { return a - b; });
     }
 
+    /* ========== 主分析 ========== */
     function generateAnalysis() {
         var dateStr = document.getElementById('solarDateInput').value;
-        if(!dateStr) { alert("請先選擇日期！"); return; }
-
+        if (!dateStr) { alert("請先選擇日期！"); return; }
         var selectedTypes = Array.from(document.querySelectorAll('.chart-type:checked')).map(function(cb) { return cb.value; });
         if (selectedTypes.length === 0) { alert("請至少勾選一種排盤模式！"); return; }
         currentResult.chartTypes = selectedTypes;
@@ -1226,35 +1218,29 @@
         var dynamicCenter = 0;
         var infoText = "";
         var calc = null;
-
         if (modeVal === 'fixed25') {
             calc = getCenterNum(dateStr, 8);
             dynamicCenter = calc.center;
-            infoText = "<strong>圖A固定模式：</strong> 圖A以 <span style='color:red;font-weight:bold;'>25</span> 為重心；動態圖依日期獨立計算，重心為 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span>。<br><strong>日期轉換：</strong> 公曆 " + dateStr + " 是 <strong>" + calc.lunarInfo + "</strong>。<br><strong>計算：</strong> 生肖(" + calc.yNum + ") + 月(" + calc.m + ") + 日(" + calc.d + ") = " + calc.sum + "，÷8 餘 " + calc.rem + "。";
+            infoText = "<strong>圖A固定模式：</strong> 圖A重心固定 <span style='color:red;font-weight:bold;'>25</span>；動態圖重心 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span>。<br><strong>日期：</strong>" + dateStr + " → " + calc.lunarInfo + "<br><strong>計算：</strong> 生肖(" + calc.yNum + ")+月(" + calc.m + ")+日(" + calc.d + ")=" + calc.sum + "，÷8 餘 " + calc.rem + "。";
         } else if (modeVal === 'custom_center') {
             dynamicCenter = parseInt(document.getElementById('manualCenter').value);
-            if (isNaN(dynamicCenter) || dynamicCenter < 1 || dynamicCenter > 49) { alert("請輸入有效的自選重心號碼（1-49）"); return; }
-            infoText = "<strong>手動指定：</strong> 動態圖重心為 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span> 號。";
+            if (isNaN(dynamicCenter) || dynamicCenter < 1 || dynamicCenter > 49) { alert("請輸入 1-49 的自選重心"); return; }
+            infoText = "<strong>手動指定：</strong> 動態圖重心 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span>。";
         } else {
             var divisor = parseInt(modeVal);
             calc = getCenterNum(dateStr, divisor);
             dynamicCenter = calc.center;
-            infoText = "<strong>日期轉換：</strong> 公曆 " + dateStr + " 是 <strong>" + calc.lunarInfo + "</strong>。<br><strong>計算：</strong> 生肖(" + calc.yNum + ") + 月(" + calc.m + ") + 日(" + calc.d + ") = " + calc.sum + "。<br><strong>餘數：</strong> " + calc.sum + " ÷ " + divisor + " = 餘 " + calc.rem + "，動態圖重心為 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span> 號。";
+            infoText = "<strong>日期：</strong>" + dateStr + " → " + calc.lunarInfo + "<br><strong>計算：</strong> 生肖(" + calc.yNum + ")+月(" + calc.m + ")+日(" + calc.d + ")=" + calc.sum + "，÷" + divisor + " 餘 " + calc.rem + "，重心 <span style='color:red;font-weight:bold;'>" + dynamicCenter + "</span>。";
         }
 
-        if (isNaN(dynamicCenter)) { alert("計算重心出錯！"); return; }
-
+        if (isNaN(dynamicCenter)) { alert("重心計算出錯！"); return; }
         var prevNums = getPrevNums();
-        var prevSpecial = getPrevSpecial();
         var warnBox = document.getElementById('warningInfo');
         var now = new Date();
-        var timeStr = now.getFullYear() + "-" + (now.getMonth()+1).toString().padStart(2,'0') + "-" + now.getDate().toString().padStart(2,'0') + " " + now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0') + ":" + now.getSeconds().toString().padStart(2,'0');
-        
+        var timeStr = now.getFullYear() + "-" + padZero(now.getMonth() + 1) + "-" + padZero(now.getDate()) + " " + padZero(now.getHours()) + ":" + padZero(now.getMinutes()) + ":" + padZero(now.getSeconds());
         currentResult.dateStr = dateStr;
         currentResult.timeStr = timeStr;
         currentResult.centerNum = dynamicCenter;
-        currentResult.prevSpecial = prevSpecial;
-
         warnBox.style.display = (prevNums.length === 0) ? 'block' : 'none';
 
         var infoBox = document.getElementById('calcInfo');
@@ -1263,13 +1249,12 @@
 
         var container = document.getElementById('gridsContainer');
         container.innerHTML = '';
-
-        var titleMap = { A: '范氏固定圖', B: '江恩動態圖', C: '洛書飛星陣', D: '九宮幻方陣', E: '江恩螺旋四方圖', F: '太極雙螺旋陣', G: '河洛五行陣' };
-        var colorMap = { A: '#ff4d4d', B: '#4d94ff', C: '#ff9933', D: '#33cc33', E: '#cc66ff', F: '#ff66b3', G: '#00cc99' };
+        var titleMap = { A: '張氏固定圖', B: '江恩動態圖', C: '洛書飛星陣', D: '九宮幻方陣', E: '江恩螺旋四方圖', F: '太極雙螺旋陣', G: '河洛五行陣' };
+        var colorMap = { A: '#d32f2f', B: '#1976d2', C: '#d84315', D: '#2e7d32', E: '#8e24aa', F: '#c2185b', G: '#00796b' };
 
         var allHotZones = new Set();
         var coverageCount = {};
-        for(var i=1; i<=49; i++) { coverageCount[i] = 0; }
+        for (var i = 1; i <= 49; i++) { coverageCount[i] = 0; }
         var isolatedRedNums = new Set();
 
         selectedTypes.forEach(function(type) {
@@ -1283,56 +1268,48 @@
             if (type === 'A') { gridData = generateFanGrid(); }
             else if (type === 'B') { gridData = generateDynamicGannGrid(chartCenter); }
             else if (type === 'C') { gridData = generateLuoshuGrid(chartCenter); }
-            else if (type === 'D') { gridData = generateMagicGrid(chartCenter); isJiugong = true; } 
-            else if (type === 'E') { gridData = generateStandardGannGrid(); isConnection = true; } 
+            else if (type === 'D') { gridData = generateMagicGrid(chartCenter); isJiugong = true; }
+            else if (type === 'E') { gridData = generateStandardGannGrid(); isConnection = true; }
             else if (type === 'F') { gridData = generateTaijiGrid(chartCenter); }
             else if (type === 'G') { gridData = generateWuxingGrid(chartCenter); }
 
             var box = document.createElement('div');
             box.className = 'grid-box';
             box.style.display = 'block';
-            box.innerHTML = 
-                '<div class="grid-title"><h3 style="color: ' + colorMap[type] + '; margin:0; justify-content:center; text-shadow: 0 0 5px ' + colorMap[type] + ';">圖 ' + type + '：' + titleMap[type] + '</h3><small>' + centerLabel + ' | 生成時間：' + timeStr + '</small></div>' +
+            box.innerHTML =
+                '<div class="grid-title"><h3 style="color: ' + colorMap[type] + '; margin:0; justify-content:center;">圖 ' + type + '：' + titleMap[type] + '</h3><small>' + centerLabel + ' | ' + timeStr + '</small></div>' +
                 '<div class="grid" id="grid-' + type + '"></div>' +
                 '<div class="legend">' +
-                    (isConnection ? '<span style="background: rgba(0, 243, 255, 0.2); color:#67e8f9;">藍底</span> 連線區 | <span style="background: rgba(255, 0, 60, 0.4); color:#fff;">紅底</span> 上期正碼' : '') +
-                    (!isConnection ? '<span style="border: 2px solid var(--primary-neon); border-radius: 50%; color: var(--primary-neon);">紅圈</span> 重心 | <span style="background: rgba(255, 183, 3, 0.3); color: #fcd34d;">黃底</span> 放射區 | <span style="background: rgba(255, 0, 60, 0.4); color:#fff;">紅底</span> 上期正碼' : '') +
-                    ' | <span style="background: rgba(255, 183, 3, 0.5); color:#fff;">橙底</span> 上期特碼' +
-                    (isJiugong ? '| <span style="border: 2px dashed var(--success-neon); border-radius:4px; color: var(--success-neon);">綠虛線</span> 九宮共振' : '') +
+                    (isConnection ? '<span style="background: #80deea; color:#006064;">藍底</span> 連線區 | <span style="background: #ff5252; color:white;">紅底</span> 上期號碼' : '') +
+                    (!isConnection ? '<span style="border: 2px solid red; border-radius: 50%;">紅圈</span> 重心 | <span style="background: #fff59d;">黃底</span> 放射區 | <span style="background: #ff5252; color:white;">紅底</span> 上期號碼' : '') +
+                    (isJiugong ? '| <span style="border: 3px dashed #2e7d32; border-radius:4px;">綠虛線</span> 九宮共振' : '') +
                 '</div><button class="btn-copy" onclick="copyText(\'' + type + '\')">📋 複製圖 ' + type + ' 結果</button>';
             container.appendChild(box);
 
-            var renderRes = renderGrid(gridData, chartCenter, prevNums, prevSpecial, isJiugong, isConnection, 'grid-' + type);
+            var renderRes = renderGrid(gridData, chartCenter, prevNums, isJiugong, isConnection, 'grid-' + type);
             var set = renderRes.hotNums;
-            currentResult.sets[type] = set.sort(function(a,b) { return a-b; });
+            currentResult.sets[type] = set.sort(function(a, b) { return a - b; });
             if (isConnection) { renderRes.isolatedReds.forEach(function(n) { isolatedRedNums.add(n); }); }
-            set.forEach(function(n) { coverageCount[n] += 1; allHotZones.add(n); });
+            set.forEach(function(n) { coverageCount[n]++; allHotZones.add(n); });
         });
 
         var overlapNums = prevNums.filter(function(n) { return allHotZones.has(n); });
-        overlapNums.sort(function(a,b) { return a-b; });
+        overlapNums.sort(function(a, b) { return a - b; });
         currentResult.overlapNums = overlapNums;
 
         currentResult.uniqueNumsMap = {};
         var commonNums = [];
-
         if (selectedTypes.length > 1) {
             selectedTypes.forEach(function(t) {
                 var otherNums = new Set();
-                selectedTypes.forEach(function(otherT) { 
-                    if (t !== otherT) { 
-                        currentResult.sets[otherT].forEach(function(n) { otherNums.add(n); }); 
-                    } 
-                });
-                currentResult.uniqueNumsMap[t] = currentResult.sets[t].filter(function(n) { return !otherNums.has(n); }).sort(function(a,b) { return a-b; });
+                selectedTypes.forEach(function(otherT) { if (t !== otherT) { currentResult.sets[otherT].forEach(function(n) { otherNums.add(n); }); } });
+                currentResult.uniqueNumsMap[t] = currentResult.sets[t].filter(function(n) { return !otherNums.has(n); }).sort(function(a, b) { return a - b; });
             });
             var firstSet = currentResult.sets[selectedTypes[0]];
             commonNums = firstSet.filter(function(n) {
-                for(var i=1; i<selectedTypes.length; i++) {
-                    if (currentResult.sets[selectedTypes[i]].indexOf(n) === -1) { return false; }
-                }
+                for (var i = 1; i < selectedTypes.length; i++) { if (currentResult.sets[selectedTypes[i]].indexOf(n) === -1) { return false; } }
                 return true;
-            }).sort(function(a,b) { return a-b; });
+            }).sort(function(a, b) { return a - b; });
         } else {
             selectedTypes.forEach(function(t) { currentResult.uniqueNumsMap[t] = currentResult.sets[t]; });
         }
@@ -1342,95 +1319,56 @@
         var filterDesc = document.getElementById('filterDesc');
         var filterText = document.getElementById('filterNumsText');
         var chartDiffBox = document.getElementById('chartDiffBox');
-
         if (prevNums.length > 0 && allHotZones.size > 0) {
             filterBox.style.display = 'block';
-            var specialHitHtml = '';
-            if (prevSpecial != null) {
-                specialHitHtml = '<br>上期特碼 <b style="color:var(--warning-neon);">' + prevSpecial.toString().padStart(2,'0') + '</b> ' +
-                    (allHotZones.has(prevSpecial) ? '✅ 落入熱區' : '❌ 未落入熱區');
-            }
-            filterDesc.innerHTML = '<strong>🎯 上期正碼與預測圖的交集（重疊號）：</strong>' + specialHitHtml + '<br>';
-            filterText.textContent = overlapNums.length ? overlapNums.map(function(n) { return n.toString().padStart(2,'0'); }).join(', ') : "無（上期號碼均未落入本次預測區）";
-
+            filterDesc.innerHTML = '<strong>🎯 上期號碼與預測圖的交集：</strong><br>';
+            filterText.textContent = overlapNums.length ? overlapNums.map(padZero).join(', ') : "無（上期號碼均未落入本次預測區）";
             var diffHtml = "";
             if (selectedTypes.length > 1) {
                 selectedTypes.forEach(function(t) {
                     if (currentResult.uniqueNumsMap[t].length > 0) {
-                        diffHtml += '<div style="margin-bottom:5px;">🔸 <strong>圖' + t + ' 獨有號：</strong><br><span style="color:#ff4d6d; font-weight:bold; font-size:16px;">' + currentResult.uniqueNumsMap[t].map(function(n) { return n.toString().padStart(2,'0'); }).join(', ') + '</span></div>';
-                    } else { 
-                        diffHtml += '<div style="margin-bottom:5px; color:var(--text-muted);">🔸 <strong>圖' + t + ' 獨有號：</strong> 無</div>'; 
+                        diffHtml += '<div style="margin-bottom:5px;">🔸 <strong>圖' + t + ' 獨有：</strong> <span style="color:#d81b60; font-weight:bold; font-size:16px;">' + currentResult.uniqueNumsMap[t].map(padZero).join(', ') + '</span></div>';
+                    } else {
+                        diffHtml += '<div style="margin-bottom:5px; color:#888;">🔸 <strong>圖' + t + ' 獨有：</strong> 無</div>';
                     }
                 });
                 if (commonNums.length > 0) {
-                    diffHtml += '<div style="margin-bottom:5px; margin-top:10px; border-top:1px dotted rgba(255,255,255,0.1); padding-top:5px;">🔹 <strong>所有圖共同命中：</strong><br><span style="color:#00ff88; font-weight:bold; font-size:16px;">' + commonNums.map(function(n) { return n.toString().padStart(2,'0'); }).join(', ') + '</span></div>';
-                } else { 
-                    diffHtml += '<div style="margin-bottom:5px; margin-top:10px; border-top:1px dotted rgba(255,255,255,0.1); padding-top:5px; color:var(--text-muted);">🔹 <strong>所有圖共同命中：</strong> 無</div>'; 
+                    diffHtml += '<div style="margin-top:10px; border-top:1px dotted #ddd; padding-top:5px;">🔹 <strong>所有圖共同：</strong> <span style="color:#d81b60; font-weight:bold; font-size:16px;">' + commonNums.map(padZero).join(', ') + '</span></div>';
+                } else {
+                    diffHtml += '<div style="margin-top:10px; border-top:1px dotted #ddd; padding-top:5px; color:#888;">🔹 <strong>所有圖共同：</strong> 無</div>';
                 }
-            } else { 
-                diffHtml = '<div style="color:var(--text-muted);">僅勾選了一張圖，無需對比獨有號。</div>'; 
+            } else {
+                diffHtml = '<div style="color:#888;">僅勾選了一張圖，無需對比獨有號。</div>';
             }
             chartDiffBox.innerHTML = diffHtml;
-        } else { 
-            filterBox.style.display = 'none'; 
+        } else {
+            filterBox.style.display = 'none';
         }
 
         var cfg = getFilterConfig();
-        cfg.killCount = getKillCount();
-        cfg.killMode = getKillMode();
-        cfg.strictBlind = document.getElementById('cfgStrictBlind').checked;
-
-        var blindCount = 0, oneCount = 0, twoCount = 0;
-        for (var bc = 1; bc <= 49; bc++) {
-            if (coverageCount[bc] === 0) { blindCount++; }
-            else if (coverageCount[bc] === 1) { oneCount++; }
-            else if (coverageCount[bc] === 2) { twoCount++; }
-        }
-        currentResult.blindCount = blindCount;
-        currentResult.killMode = cfg.killMode;
-
         var killPanel = document.getElementById('killPanel');
         var killContainer = document.getElementById('killNumsContainer');
-        var missCount = getSpecialMissCount(historyData.length - 1);
-        var scores = computeSpecialKillScores(coverageCount, prevSpecial, isolatedRedNums, historyData, historyData.length - 1, cfg, missCount);
+        var missCount = getMissCount(historyData.length - 1);
+        var scores = computeKillScores(coverageCount, prevNums, isolatedRedNums, historyData, historyData.length - 1, cfg, missCount);
         currentResult.killScores = scores;
 
-        var customNums = getCustomKillNums();
-        if (customNums.length > 0) {
-            currentResult.killNums = customNums.slice(0, 20);
-            currentResult.isCustomKill = true;
-            currentResult.fillCount = 0;
-        } else {
-            currentResult.killNums = computeVotedKillNums(scores, prevSpecial, cfg, coverageCount, isolatedRedNums);
-            currentResult.isCustomKill = false;
-            var fc = 0;
-            currentResult.killNums.forEach(function(n) { 
-                if (coverageCount[n] >= 1) { fc++; } 
-            });
-            currentResult.fillCount = fc;
+        // 判断杀号数量
+        var killCount = 5;
+        if (currentKillMode === 'special') {
+            killCount = parseInt(document.getElementById('specialKillCount').value);
         }
+
+        currentResult.killNums = computeVotedKillNums(scores, prevNums, cfg, coverageCount, isolatedRedNums, killCount);
 
         killPanel.style.display = 'block';
         killContainer.innerHTML = '';
-        var isMany = currentResult.killNums.length > 7;
         currentResult.killNums.forEach(function(num) {
             var ball = document.createElement('div');
             ball.className = 'kill-ball';
-            ball.textContent = num.toString().padStart(2, '0');
-            ball.title = '評分：' + (scores[num] || 0).toFixed(1) + '，覆蓋次數：' + (coverageCount[num] || 0);
-            if (isMany) {
-                ball.style.width = '44px';
-                ball.style.height = '44px';
-                ball.style.fontSize = '18px';
-            }
-            if (currentResult.isCustomKill) { ball.classList.add('manual'); }
-            else if (coverageCount[num] >= 1) { ball.classList.add('zone-fill'); }
+            ball.textContent = padZero(num);
+            ball.title = '評分：' + (scores[num] || 0).toFixed(1);
             killContainer.appendChild(ball);
         });
-
-        document.getElementById('specialRef').textContent = prevSpecial != null
-            ? '本期目標：下期特別號｜上期特碼：' + prevSpecial.toString().padStart(2,'0')
-            : '本期目標：下期特別號｜上期特碼：未輸入';
 
         var enabled = [];
         if (cfg.blind > 0) { enabled.push('盲區'); }
@@ -1443,75 +1381,40 @@
         if (cfg.hotProtectW > 0) { enabled.push('防連莊'); }
         if (cfg.neighborW > 0) { enabled.push('鄰號罰'); }
         if (cfg.tailW > 0) { enabled.push('熱尾罰'); }
-        if (cfg.excludePrev) { enabled.push('排上期特碼'); }
-        if (cfg.combo) { enabled.push('組合約束'); }
+        if (cfg.excludePrev) { enabled.push('排重號'); }
+        if (cfg.combo && currentKillMode === 'normal') { enabled.push('組合約束'); }
         
-        var voteHint = (currentWinRateInfo.topConfigs && currentWinRateInfo.topConfigs.length > 0)
-            ? '｜Top-' + currentWinRateInfo.topConfigs.length + ' 配置投票'
-            : '｜未啟用投票（請跑AI尋優）';
-        
-        var modeLabel = cfg.killMode === 'blindOnly' ? '盲區反選制' : '綜合評分制';
-        var strictLabel = cfg.strictBlind ? '（嚴格）' : '';
-        var modeText = currentResult.isCustomKill
-            ? '｜✋ 手動自定義 ' + currentResult.killNums.length + ' 碼'
-            : '｜' + modeLabel + strictLabel + ' · 殺 ' + currentResult.killNums.length + ' 碼';
-        
-        var blindInfo = '';
-        if (cfg.killMode === 'blindOnly' && !currentResult.isCustomKill) {
-            blindInfo = '｜盲區候選 ' + blindCount + ' 個' + (currentResult.fillCount > 0 ? '，其中 ' + currentResult.fillCount + ' 個為熱區補位' : '，全部為純盲區');
-        }
-        
-        var warningHtml = '';
-        var requestedCount = getKillCount();
-        if (currentResult.killNums.length < requestedCount && !currentResult.isCustomKill) {
-            warningHtml = '<br><span style="color:var(--danger-neon); font-weight:bold; font-size:14px;">⚠️ 警告：目前為「嚴格盲區模式」，盲區號碼不足，只殺 ' + currentResult.killNums.length + ' 碼。如需補滿 ' + requestedCount + ' 碼，請取消勾選上方「嚴格盲區」！</span>';
-        }
-
-        document.getElementById('killDesc').innerHTML = '當前配置：' + enabled.join('｜') + modeText + blindInfo + voteHint + warningHtml;
-        document.getElementById('backtestBox').style.display = 'none';
+        var voteHint = (currentWinRateInfo.topConfigs && currentWinRateInfo.topConfigs.length > 0) ? '｜Top-' + currentWinRateInfo.topConfigs.length + ' 配置投票' : '｜未啟用投票';
+        document.getElementById('killDesc').textContent = '當前配置：' + enabled.join('｜') + voteHint;
     }
 
-    function renderGrid(gridData, centerNum, prevNums, prevSpecial, isJiugong, isConnection, containerId) {
+    function renderGrid(gridData, centerNum, prevNums, isJiugong, isConnection, containerId) {
         var container = document.getElementById(containerId);
         container.innerHTML = '';
         var hotNums = new Set();
         var cr = -1, cc = -1;
         if (centerNum !== -1) {
-            for(var r=0; r<7; r++) {
-                for(var c=0; c<7; c++) {
-                    if (gridData[r][c] === centerNum) { cr = r; cc = c; }
-                }
-            }
+            for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (gridData[r][c] === centerNum) { cr = r; cc = c; } } }
         }
-        var isBlueZoneGrid = Array.from({length:7}, function() { return Array(7).fill(false); });
+        var isBlueZoneGrid = Array.from({ length: 7 }, function() { return Array(7).fill(false); });
         if (isConnection) {
             var rowCount = Array(7).fill(0), colCount = Array(7).fill(0);
-            for(var r=0; r<7; r++) {
-                for(var c=0; c<7; c++) {
-                    if(prevNums.indexOf(gridData[r][c]) !== -1) { rowCount[r]++; colCount[c]++; }
-                }
-            }
-            for(var r=0; r<7; r++) {
-                for(var c=0; c<7; c++) {
-                    if (rowCount[r] >= 2 || colCount[c] >= 2) { isBlueZoneGrid[r][c] = true; }
-                }
-            }
+            for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (prevNums.indexOf(gridData[r][c]) !== -1) { rowCount[r]++; colCount[c]++; } } }
+            for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (rowCount[r] >= 2 || colCount[c] >= 2) { isBlueZoneGrid[r][c] = true; } } }
         }
         var isolatedRedNums = new Set();
-        for(var i=0; i<7; i++) {
-            for(var j=0; j<7; j++) {
+        for (var i = 0; i < 7; i++) {
+            for (var j = 0; j < 7; j++) {
                 var val = gridData[i][j];
                 var cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.textContent = val;
                 var isPrevRed = prevNums.indexOf(val) !== -1;
-                var isPrevSpecial = (prevSpecial != null) && (val === prevSpecial);
                 var isCenter = (centerNum !== -1) && (i === cr && j === cc);
                 var inRadiate = false;
                 if (!isConnection && cr !== -1 && (i === cr || j === cc || Math.abs(i - cr) === Math.abs(j - cc))) { inRadiate = true; }
                 if (inRadiate) { hotNums.add(val); cell.classList.add('radiate-node'); }
                 if (isPrevRed) { cell.classList.add('prev-red'); if (inRadiate) { cell.classList.add('fan-overlap'); } }
-                if (isPrevSpecial) { cell.classList.add('special-node'); }
                 if (isCenter) { cell.classList.add('center-node'); if (isPrevRed) { cell.classList.add('prev-red'); } }
                 if (isJiugong && isJiugongConnected(val, centerNum)) { cell.classList.add('jiugong-linked'); hotNums.add(val); }
                 if (isConnection) {
@@ -1525,229 +1428,106 @@
     }
 
     function copyKillNums() {
-        if(currentResult.killNums.length === 0) { return; }
-        var cfg = getFilterConfig();
-        var modeLabel = currentResult.killMode === 'blindOnly' ? '盲區反選制' : '綜合評分制';
-        var strictLabel = cfg.strictBlind ? '（嚴格模式）' : '';
-        
-        var enabled = [];
-        if (cfg.blind > 0) { enabled.push('盲區' + cfg.blind); }
-        if (cfg.colorW > 0) { enabled.push('波色' + cfg.colorW); }
-        if (cfg.missW > 0) { enabled.push('防爆冷' + cfg.missW); }
-        if (cfg.streakW > 0) { enabled.push('連黑止損'); }
-        if (cfg.isolatedW > 0) { enabled.push('圖E護體'); }
-        if (cfg.heatW > 0) { enabled.push('短冷熱' + cfg.heatW); }
-        if (cfg.longHeatW > 0) { enabled.push('長冷熱'); }
-        if (cfg.hotProtectW > 0) { enabled.push('防連莊'); }
-        if (cfg.neighborW > 0) { enabled.push('鄰號罰'); }
-        if (cfg.tailW > 0) { enabled.push('熱尾罰'); }
-        if (cfg.excludePrev) { enabled.push('排上期特碼'); }
-        if (cfg.combo) { enabled.push('組合約束'); }
-
-        var text = "【本期特別號殺號】(共" + currentResult.killNums.length + "碼" +
-            (currentResult.isCustomKill ? "，手動自定義" : "，" + modeLabel + strictLabel) + ")\n" +
+        if (currentResult.killNums.length === 0) { return; }
+        var modeName = currentKillMode === 'normal' ? '最強殺號(平碼五不中)' : '特碼排除';
+        var text = "【本期" + modeName + "】\n" +
             "日期：" + currentResult.dateStr + "\n" +
-            (currentResult.prevSpecial != null ? "上期特碼：" + currentResult.prevSpecial.toString().padStart(2,'0') + "\n" : "") +
-            "預測下期特碼不會開出：" + currentResult.killNums.map(function(n) { return n.toString().padStart(2,'0'); }).join(', ') + "\n" +
-            "------------------------\n" +
-            "📊 詳細配置：\n" +
-            "· 勾選圖表：" + currentResult.chartTypes.join(', ') + "\n" +
-            "· 盲區數量：" + currentResult.blindCount + " 個（純盲區）\n" +
-            "· 啟用參數：" + enabled.join(' | ') + "\n" +
-            "------------------------\n" +
-            getWinRateText() + "\n" +
-            "------------------------\n" +
-            "⚠️ 僅供參考，理性投注";
+            "殺號：" + currentResult.killNums.map(padZero).join(', ') + "\n" +
+            "------------------------\n" + getWinRateText() + "\n" +
+            "------------------------\n⚠️ 僅供參考，理性投注";
         fallbackCopyTextToClipboard(text);
     }
-
     function copyText(type) {
         if (currentResult.centerNum === 0 || isNaN(currentResult.centerNum)) { alert("請先生成有效的分析結果！"); return; }
-        var text = ""; var titleMap = { A: '范氏固定圖', B: '江恩動態圖', C: '洛書飛星陣', D: '九宮幻方陣', E: '江恩螺旋四方圖', F: '太極雙螺旋陣', G: '河洛五行陣' };
+        var text = "";
+        var titleMap = { A: '張氏固定圖', B: '江恩動態圖', C: '洛書飛星陣', D: '九宮幻方陣', E: '江恩螺旋四方圖', F: '太極雙螺旋陣', G: '河洛五行陣' };
         if (type === 'ALL') {
-            text = "【多陣法與特碼殺號綜合報告】\n預測日期：" + currentResult.dateStr + "\n生成時間：" + currentResult.timeStr + "\n";
-            if (currentResult.prevSpecial != null) { text += "上期特碼：" + currentResult.prevSpecial.toString().padStart(2,'0') + "\n"; }
-            text += "------------------------\n";
+            text = "【多陣法與殺號綜合報告】\n預測日期：" + currentResult.dateStr + "\n生成時間：" + currentResult.timeStr + "\n------------------------\n";
             currentResult.chartTypes.forEach(function(t) {
-                var nums = currentResult.sets[t].map(function(n) { return n.toString().padStart(2, '0'); }).join(', ');
+                var nums = currentResult.sets[t].map(padZero).join(', ');
                 var cLabel = (t === 'E') ? '固定螺旋' : ('重心 ' + currentResult.chartCenters[t]);
-                text += "▶ 圖" + t + " [" + titleMap[t] + "]" + cLabel + " 熱區/藍區：\n" + nums + "\n\n";
+                text += "▶ 圖" + t + " [" + titleMap[t] + "]" + cLabel + " 熱區：\n" + nums + "\n\n";
             });
-            var modeLabel = currentResult.killMode === 'blindOnly' ? '盲區反選制' : '綜合評分制';
-            text += "\n------------------------\n🔪 【本期特別號殺號（共" + currentResult.killNums.length + "碼" +
-                (currentResult.isCustomKill ? "，手動自定義" : "，" + modeLabel) + "）】：\n" +
-                currentResult.killNums.map(function(n) { return n.toString().padStart(2,'0'); }).join(', ') + "\n";
+            text += "\n------------------------\n🔪 【本期殺號】：\n" + currentResult.killNums.map(padZero).join(', ') + "\n";
             text += "------------------------\n" + getWinRateText() + "\n";
             text += "------------------------\n⚠️ 僅供參考，理性投注";
         } else {
-            var nums = currentResult.sets[type].map(function(n) { return n.toString().padStart(2, '0'); }).join(', ');
+            var nums = currentResult.sets[type].map(padZero).join(', ');
             var cLabel = (type === 'E') ? '固定螺旋' : ('重心 ' + currentResult.chartCenters[type]);
-            text = "【圖" + type + "：" + titleMap[type] + "】\n日期：" + currentResult.dateStr + "\n" + cLabel +
-                "\n熱區號碼：" + nums + "\n------------------------\n" + getWinRateText();
+            text = "【圖" + type + "：" + titleMap[type] + "】\n日期：" + currentResult.dateStr + "\n" + cLabel + "\n熱區號碼：" + nums + "\n------------------------\n" + getWinRateText();
         }
         fallbackCopyTextToClipboard(text);
     }
-
     function fallbackCopyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
         textArea.value = text; textArea.style.position = "fixed"; document.body.appendChild(textArea);
         textArea.focus(); textArea.select();
-        try { document.execCommand('copy'); alert("✅ 已成功複製！（含勝率與詳細配置）"); } catch (err) { alert("❌ 複製失敗。"); }
+        try { document.execCommand('copy'); alert("✅ 已複製"); } catch (err) { alert("❌ 複製失敗"); }
         document.body.removeChild(textArea);
     }
 
-    function importHistory() {
-        var text = document.getElementById('importData').value;
-        if (!text || !text.trim()) { alert("❌ 請先粘貼歷史記錄！"); return; }
-        
-        var cleanText = text.replace(/[，,：:；;（）\(\)\[\]]/g, ' ');
-        var lines = cleanText.split('\n');
-        var count = 0;
-        var currentDateContext = ""; 
-        
-        lines.forEach(function(line) {
-            line = line.trim();
-            if (!line) { return; }
-            
-            var dateMatch = line.match(/(\d{2,4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
-            if (dateMatch) {
-                var y = dateMatch[1]; if (y.length === 2) { y = "20" + y; }
-                currentDateContext = y + "-" + dateMatch[2].padStart(2,'0') + "-" + dateMatch[3].padStart(2,'0');
-                line = line.replace(dateMatch[0], ' '); 
-            } else {
-                var periodMatch = line.match(/(20\d{2})\D*?(\d{2,3})/);
-                if (periodMatch && line.length < 30) {
-                    currentDateContext = periodMatch[1] + "-" + periodMatch[2];
-                    line = line.replace(periodMatch[0], ' '); 
-                }
-            }
-            
-            var nums = line.match(/\d+/g);
-            if (!nums || nums.length < 6) { return; }
-            
-            var validNums = [];
-            for (var i = 0; i < nums.length; i++) {
-                var val = parseInt(nums[i]);
-                if (val >= 1 && val <= 49) {
-                    if (validNums.indexOf(val) === -1) { validNums.push(val); }
-                }
-            }
-            
-            if (validNums.length >= 6) {
-                var finalNums = validNums.slice(0, 6);
-                var special = (validNums.length >= 7) ? validNums[6] : null;
-                var recordDate = currentDateContext || ("未知期-" + (historyData.length + 1));
-                
-                var isExist = historyData.find(function(h) { 
-                    return h.date === recordDate || (h.nums.join(',') === finalNums.join(',') && (h.special == null ? null : h.special) === special); 
-                });
-                
-                if (!isExist) {
-                    historyData.push({ date: recordDate, nums: finalNums, special: special });
-                    count++;
-                }
-            }
-        });
-        
-        if (count > 0) {
-            historyData.sort(function(a, b) { return a.date.localeCompare(b.date); });
-            localStorage.setItem('gann_history_pure', JSON.stringify(historyData));
-            renderHistoryList(); 
-            document.getElementById('importData').value = '';
-            alert("✅ 成功解析並導入了 " + count + " 條記錄！");
-        } else {
-            alert("❌ 導入失敗：未識別到有效的 6 正碼 + 1 特碼。");
-        }
-    }
-
     function renderHistoryList() {
-        var list = document.getElementById('historyList'); list.innerHTML = '';
-        if(historyData.length === 0) { list.innerHTML = '<li style="color:var(--text-muted); justify-content:center;">暫無記錄</li>'; return; }
+        var list = document.getElementById('historyList');
+        list.innerHTML = '';
+        if (historyData.length === 0) { list.innerHTML = '<li style="color:#999; justify-content:center;">暫無記錄（請點擊雲端同步）</li>'; return; }
         historyData.slice().reverse().forEach(function(item) {
             var li = document.createElement('li');
-            var d = item.date; 
-            var displayDate = d.indexOf('-') !== -1 ? d.substring(0,4) + "年第" + d.substring(5) + "期" : d.substring(0,4) + "-" + d.substring(4,6) + "-" + d.substring(6,8);
-            var spStr = (item.special != null) ? ' <span class="sp">+' + item.special.toString().padStart(2,'0') + '</span>' : '';
-            li.innerHTML = '<span>' + displayDate + '</span> <span><span class="nums">' + item.nums.map(function(n) { return n.toString().padStart(2, '0'); }).join(',') + '</span>' + spStr + '</span>';
+            var d = item.date || '';
+            var specialStr = item.special ? ' + <span style="color:#d97706">' + padZero(item.special) + '</span>' : '';
+            li.innerHTML = '<span>' + d + '</span> <span class="nums">' + item.nums.map(padZero).join(',') + specialStr + '</span>';
             li.onclick = function() {
-                if (d.indexOf('-') !== -1 && d.length === 8) {
-                    document.getElementById('solarDateInput').value = d.substring(0,4) + "-" + d.substring(4,6) + "-" + d.substring(6,8);
-                } else {
-                    alert("提示：此記錄為期號或未知格式，請手動選擇公曆日期。"); 
-                }
+                if (d && d.match(/^\d{4}-\d{2}-\d{2}$/)) { document.getElementById('solarDateInput').value = d; }
                 document.querySelectorAll('.prev-num').forEach(function(input, idx) { input.value = idx < Math.min(6, item.nums.length) ? item.nums[idx] : ''; });
-                document.getElementById('prevSpecial').value = (item.special != null) ? item.special : '';
-                generateAnalysis(); window.scrollTo({ top: 0, behavior: 'smooth' });
+                generateAnalysis();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
             list.appendChild(li);
         });
     }
-
     function clearHistory() {
-        if(confirm("確定要清空所有歷史記錄嗎？")) { 
-            historyData = []; 
-            localStorage.removeItem('gann_history_pure'); 
-            renderHistoryList(); 
-        }
+        if (confirm("確定清空所有歷史記錄？")) { historyData = []; localStorage.removeItem('gann_history_pure'); renderHistoryList(); }
     }
 
-    function runOneStrategyBacktest(cfg, startIndex, endIndex, selectedTypes, modeVal) {
+    /* ========== 回测（VIP） ========== */
+    function runOneStrategyBacktest(cfg, startIndex, endIndex, selectedTypes, modeVal, isSpecialMode, killCount) {
         var totalTested = 0, totalKilledHits = 0, perfectKills = 0, currentLossStreak = 0, maxLossStreak = 0;
-        var detailLogs = []; 
-        var killCount = (cfg && cfg.killCount) ? cfg.killCount : getKillCount();
-
-        for(var i = startIndex; i < endIndex; i++) {
-            var current = historyData[i], next = historyData[i+1]; 
-            if (!next || next.special == null) { continue; }
-            if (!current || current.nums.length < 6) { continue; }
+        var detailLogs = [];
+        for (var i = startIndex; i < endIndex; i++) {
+            var current = historyData[i], next = historyData[i+1];
+            if (!current || !next) { continue; }
             
+            // 如果是特码模式，且没有特码数据，则跳过
+            if (isSpecialMode && (!next.special || next.special < 1)) { continue; }
+
             var covKey = 'cov_' + i + '_' + selectedTypes.join('') + '_' + modeVal;
             var covData = _cache.cov[covKey];
             if (!covData) {
-                var dateForCalc = current.date.indexOf('-') !== -1 ? current.date.substring(0,4) + "-01-01" : current.date.substring(0,4) + "-" + current.date.substring(4,6) + "-" + current.date.substring(6,8);
+                var dateForCalc = current.date && current.date.indexOf('-') !== -1 ? current.date : '2024-01-01';
                 var dynamicCenter = modeVal === 'fixed25' ? getCenterNum(dateForCalc, 8).center : (modeVal === 'custom_center' ? parseInt(document.getElementById('manualCenter').value) : getCenterNum(dateForCalc, parseInt(modeVal)).center);
                 if (isNaN(dynamicCenter)) { return null; }
-
-                var coverageCount = {}; 
-                for(var k=1; k<=49; k++) { coverageCount[k] = 0; }
+                var coverageCount = {}; for (var k = 1; k <= 49; k++) { coverageCount[k] = 0; }
                 var isolatedRedNums = new Set();
-
                 selectedTypes.forEach(function(type) {
                     var chartCenter = (type === 'A') ? 25 : (type === 'E' ? -1 : dynamicCenter);
                     var gridData, isJiugong = false, isConnection = false;
                     if (type === 'A') { gridData = generateFanGrid(); }
                     else if (type === 'B') { gridData = generateDynamicGannGrid(chartCenter); }
                     else if (type === 'C') { gridData = generateLuoshuGrid(chartCenter); }
-                    else if (type === 'D') { gridData = generateMagicGrid(chartCenter); isJiugong = true; } 
+                    else if (type === 'D') { gridData = generateMagicGrid(chartCenter); isJiugong = true; }
                     else if (type === 'E') { gridData = generateStandardGannGrid(); isConnection = true; }
                     else if (type === 'F') { gridData = generateTaijiGrid(chartCenter); }
                     else if (type === 'G') { gridData = generateWuxingGrid(chartCenter); }
-
                     var cr = -1, cc = -1;
-                    if (chartCenter !== -1) {
-                        for(var r=0; r<7; r++) {
-                            for(var c=0; c<7; c++) {
-                                if(gridData[r][c] === chartCenter) { cr=r; cc=c; }
-                            }
-                        }
-                    }
+                    if (chartCenter !== -1) { for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (gridData[r][c] === chartCenter) { cr = r; cc = c; } } } }
                     var tempSet = new Set();
-                    var isBlueZoneGrid = Array.from({length:7}, function() { return Array(7).fill(false); });
+                    var isBlueZoneGrid = Array.from({ length: 7 }, function() { return Array(7).fill(false); });
                     if (isConnection) {
                         var rowCount = Array(7).fill(0), colCount = Array(7).fill(0);
-                        for(var r=0; r<7; r++) {
-                            for(var c=0; c<7; c++) {
-                                if(current.nums.indexOf(gridData[r][c]) !== -1) { rowCount[r]++; colCount[c]++; }
-                            }
-                        }
-                        for(var r=0; r<7; r++) {
-                            for(var c=0; c<7; c++) {
-                                if (rowCount[r] >= 2 || colCount[c] >= 2) { isBlueZoneGrid[r][c] = true; }
-                            }
-                        }
+                        for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (current.nums.indexOf(gridData[r][c]) !== -1) { rowCount[r]++; colCount[c]++; } } }
+                        for (var r = 0; r < 7; r++) { for (var c = 0; c < 7; c++) { if (rowCount[r] >= 2 || colCount[c] >= 2) { isBlueZoneGrid[r][c] = true; } } }
                     }
-                    for(var r=0; r<7; r++) {
-                        for(var c=0; c<7; c++) { 
+                    for (var r = 0; r < 7; r++) {
+                        for (var c = 0; c < 7; c++) {
                             var val = gridData[r][c];
                             if (!isConnection && cr !== -1 && (r === cr || c === cc || Math.abs(r - cr) === Math.abs(c - cc))) { tempSet.add(val); }
                             if (isConnection && isBlueZoneGrid[r][c]) { tempSet.add(val); }
@@ -1755,106 +1535,101 @@
                             if (type === 'D' && isJiugongConnected(val, chartCenter)) { tempSet.add(val); }
                         }
                     }
-                    tempSet.forEach(function(n) { coverageCount[n] += 1; });
+                    tempSet.forEach(function(n) { coverageCount[n]++; });
                 });
                 covData = { coverageCount: coverageCount, isolatedRedNums: isolatedRedNums };
                 _cache.cov[covKey] = covData;
             }
-
             var currentCfg = Object.assign({}, cfg);
             if (currentCfg.streakW > 0 && currentLossStreak >= currentCfg.streakW) {
                 currentCfg.blind = currentCfg.blind * 0.4;
                 currentCfg.missW = 0;
             }
-
-            var missCount = getSpecialMissCount(i);
-            var excludeForSelect = (currentCfg.excludePrev && current.special != null) ? [current.special] : [];
-            var scores = computeSpecialKillScores(covData.coverageCount, current.special, covData.isolatedRedNums, historyData, i, currentCfg, missCount);
-            var killNums = selectKillByScore(scores, excludeForSelect, currentCfg, killCount, covData.coverageCount);
+            var missCount = getMissCount(i);
+            var scores = computeKillScores(covData.coverageCount, current.nums, covData.isolatedRedNums, historyData, i, currentCfg, missCount);
+            var killNums = selectKillNByScore(scores, current.nums, currentCfg, killCount);
             
-            var hitSpecial = (killNums.indexOf(next.special) !== -1) ? [next.special] : [];
-            totalKilledHits += hitSpecial.length;
+            var killedHitsArr = [];
+            if (isSpecialMode) {
+                // 特码模式下，看特码是否在杀号中
+                if (killNums.indexOf(next.special) !== -1) { killedHitsArr.push(next.special); }
+            } else {
+                // 平码模式下，看6个平码是否在杀号中
+                killedHitsArr = next.nums.filter(function(n) { return killNums.indexOf(n) !== -1; });
+            }
             
-            var dateDisplay = next.date.indexOf('-') !== -1 ? next.date : next.date.substring(4,6) + "/" + next.date.substring(6,8);
-            var killStr = killNums.map(function(n) { return n.toString().padStart(2,'0'); }).join(',');
-            var spStr = next.special.toString().padStart(2,'0');
+            totalKilledHits += killedHitsArr.length;
+            var dateDisplay = next.date || '';
+            var killStr = killNums.map(padZero).join(',');
+            var displayHitStr = isSpecialMode ? '特' + killedHitsArr.join(',') : killedHitsArr.join(',');
 
-            if (hitSpecial.length === 0) { 
-                perfectKills++; 
-                currentLossStreak = 0; 
-                detailLogs.push("<span class='log-perfect'>✅ [" + dateDisplay + "] 特碼 " + spStr + " 完美全殺 (殺: " + killStr + ")</span>");
-            } else { 
-                currentLossStreak++; 
+            if (killedHitsArr.length === 0) {
+                perfectKills++; currentLossStreak = 0;
+                detailLogs.push("<span class='log-perfect'>✅ [" + dateDisplay + "] 完美全殺 (殺: " + killStr + ")</span>");
+            } else {
+                currentLossStreak++;
                 if (currentLossStreak > maxLossStreak) { maxLossStreak = currentLossStreak; }
-                detailLogs.push("<span class='log-error'>❌ [" + dateDisplay + "] 特碼 " + spStr + " 被殺中 (殺: " + killStr + ")</span>");
+                detailLogs.push("<span class='log-error'>❌ [" + dateDisplay + "] 殺錯: [" + displayHitStr + "] (殺: " + killStr + ")</span>");
             }
             totalTested++;
         }
-        return totalTested > 0 ? { 
-            totalTested: totalTested, 
-            perfectKills: perfectKills, 
-            perfectRate: (perfectKills / totalTested * 100), 
-            avgHits: totalKilledHits / totalTested, 
-            maxLossStreak: maxLossStreak,
-            detailLogs: detailLogs 
-        } : null;
+        return totalTested > 0 ? { totalTested: totalTested, perfectKills: perfectKills, perfectRate: (perfectKills / totalTested * 100), avgHits: totalKilledHits / totalTested, maxLossStreak: maxLossStreak, detailLogs: detailLogs } : null;
+    }
+
+    function vipRunBacktest() {
+        if (!requireVip('常規對比回測')) { return; }
+        runBacktest();
+    }
+    function vipRunAIGridSearch() {
+        if (!requireVip('AI 基因尋優')) { return; }
+        runAIGridSearch();
     }
 
     function runBacktest() {
-        if(historyData.length < 2) { alert("至少需要兩期記錄才能回測！"); return; }
+        if (historyData.length < 2) { alert("至少需要兩期記錄！（請先雲端同步）"); return; }
         var backtestPeriods = parseInt(document.getElementById('backtestPeriods').value);
         if (isNaN(backtestPeriods) || backtestPeriods < 10) { alert("請輸入至少 10 的回測期數！"); return; }
-        
-        _cache = { heat: {}, cov: {}, sheat: {}, smiss: {} };
-        
+        _cache = { heat: {}, cov: {} };
         var actualPeriods = Math.min(backtestPeriods, historyData.length - 1);
         var startIndex = historyData.length - 1 - actualPeriods;
         var currentSelectedTypes = Array.from(document.querySelectorAll('.chart-type:checked')).map(function(cb) { return cb.value; });
-        if (currentSelectedTypes.length === 0) { alert("請至少勾選一種排盤模式用於回測！"); return; }
+        if (currentSelectedTypes.length === 0) { alert("請至少勾選一種排盤模式！"); return; }
         var modeVal = document.getElementById('modInput').value;
-        var killCount = getKillCount();
+        var isSpecialMode = (currentKillMode === 'special');
+        var killCount = 5;
+        if (isSpecialMode) { killCount = parseInt(document.getElementById('specialKillCount').value); }
 
         var aiStrategyObj = aiBestConfig ? {
-            id: 'AI_MEMORY', 
-            name: '🏆 歷史最優 AI 基準', 
-            cfg: aiBestConfig.cfg, 
-            customTypes: aiBestConfig.types 
+            id: 'AI_MEMORY', name: '🏆 歷史最優 AI 基準',
+            cfg: aiBestConfig.cfg, customTypes: aiBestConfig.types
         } : {
-            id: 'AI_DEFAULT', 
-            name: '⭐ 預設精簡基準', 
-            cfg: { blind: 60, heatW: 6, missW: 30, streakW: 1, isolatedW: 150, colorW: 0, combo: false, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false, killMode: 'score', strictBlind: false }, 
+            id: 'AI_DEFAULT', name: '⭐ 預設精簡基準',
+            cfg: { blind: 61, heatW: 6, missW: 50, streakW: 1, isolatedW: 150, colorW: 0, combo: true, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false },
             customTypes: ['A', 'C', 'D', 'E']
         };
-
         var BENCHMARK_STRATEGIES = [
             aiStrategyObj,
-            { id:'A', name:'純盲區(評分制)', cfg:{ killMode:'score', blind:60, heatW:0, missW:0, streakW:0, isolatedW:0, colorW:0, combo:false, neighborW:0, tailW:0, longHeatW:0, hotProtectW:0, excludePrev:false, strictBlind:false } },
-            { id:'B', name:'盲區+冷熱+防爆冷(評分制)', cfg:{ killMode:'score', blind:60, heatW:6, missW:30, streakW:1, isolatedW:0, colorW:0, combo:false, neighborW:0, tailW:0, longHeatW:0, hotProtectW:0, excludePrev:false, strictBlind:false } },
-            { id:'F', name:'盲區反選制(同B參數,只殺非熱區)', cfg:{ killMode:'blindOnly', blind:60, heatW:6, missW:30, streakW:1, isolatedW:0, colorW:0, combo:false, neighborW:0, tailW:0, longHeatW:0, hotProtectW:0, excludePrev:false, strictBlind:false } },
-            { id:'C', name:'盲區+冷熱+波色+防爆冷(評分制)', cfg:{ killMode:'score', blind:60, heatW:6, missW:30, streakW:1, isolatedW:0, colorW:20, combo:false, neighborW:0, tailW:0, longHeatW:0, hotProtectW:0, excludePrev:false, strictBlind:false } },
-            { id:'D', name:'盲區+冷熱+圖E+波色+防爆冷(評分制)', cfg:{ killMode:'score', blind:60, heatW:6, missW:30, streakW:1, isolatedW:150, colorW:20, combo:false, neighborW:0, tailW:0, longHeatW:0, hotProtectW:0, excludePrev:false, strictBlind:false } },
-            { id:'E', name:'完整全參數(評分制)', cfg:{ killMode:'score', blind:60, heatW:6, missW:30, streakW:1, isolatedW:150, colorW:20, combo:true, neighborW:35, tailW:12, longHeatW:10, hotProtectW:80, excludePrev:true, strictBlind:false } },
-            { id:'E2', name:'完整全參數(盲區反選制-嚴格)', cfg:{ killMode:'blindOnly', blind:60, heatW:6, missW:30, streakW:1, isolatedW:150, colorW:20, combo:true, neighborW:35, tailW:12, longHeatW:10, hotProtectW:80, excludePrev:true, strictBlind:true } }
+            { id: 'A', name: '純盲區', cfg: { blind: 60, heatW: 0, missW: 0, streakW: 0, isolatedW: 0, colorW: 0, combo: false, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false } },
+            { id: 'B', name: '盲區+冷熱+防爆冷', cfg: { blind: 60, heatW: 9, missW: 50, streakW: 1, isolatedW: 0, colorW: 0, combo: false, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false } },
+            { id: 'C', name: '盲區+冷熱+波色+防爆冷', cfg: { blind: 60, heatW: 9, missW: 50, streakW: 1, isolatedW: 0, colorW: 30, combo: false, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false } },
+            { id: 'D', name: '盲區+冷熱+圖E+波色+防爆冷', cfg: { blind: 60, heatW: 9, missW: 50, streakW: 1, isolatedW: 150, colorW: 30, combo: false, neighborW: 0, tailW: 0, longHeatW: 0, hotProtectW: 0, excludePrev: false } },
+            { id: 'E', name: '完整全參數', cfg: { blind: 60, heatW: 9, missW: 50, streakW: 1, isolatedW: 150, colorW: 30, combo: true, neighborW: 45, tailW: 18, longHeatW: 15, hotProtectW: 100, excludePrev: true } }
         ];
-
-        var strategies = [{ id:'CUR', name:'★ 當前自訂參數', cfg: getFilterConfig(), customTypes: currentSelectedTypes }];
+        var strategies = [{ id: 'CUR', name: '★ 當前自訂參數', cfg: getFilterConfig(), customTypes: currentSelectedTypes }];
         BENCHMARK_STRATEGIES.forEach(function(s) { strategies.push(s); });
-
-        strategies.forEach(function(s) { s.cfg.killCount = killCount; });
 
         var results = [];
         strategies.forEach(function(stg) {
             var testTypes = stg.customTypes || currentSelectedTypes;
-            var r = runOneStrategyBacktest(stg.cfg, startIndex, historyData.length - 1, testTypes, modeVal);
+            var r = runOneStrategyBacktest(stg.cfg, startIndex, historyData.length - 1, testTypes, modeVal, isSpecialMode, killCount);
             if (r) { results.push({ id: stg.id, name: stg.name, cfg: stg.cfg, customTypes: stg.customTypes, res: r }); }
         });
-
-        if (results.length === 0) { alert("回測失敗！可能歷史數據缺少特碼記錄。"); return; }
+        if (results.length === 0) { alert("回測失敗！可能是歷史數據中沒有特碼。"); return; }
 
         var bestIdx = 0;
-        for (var bi2=1; bi2<results.length; bi2++) {
-            if (results[bi2].res.perfectRate > results[bestIdx].res.perfectRate || 
-               (results[bi2].res.perfectRate === results[bestIdx].res.perfectRate && results[bi2].res.avgHits < results[bestIdx].res.avgHits)) {
+        for (var bi2 = 1; bi2 < results.length; bi2++) {
+            if (results[bi2].res.perfectRate > results[bestIdx].res.perfectRate ||
+                (results[bi2].res.perfectRate === results[bestIdx].res.perfectRate && results[bi2].res.avgHits < results[bestIdx].res.avgHits)) {
                 bestIdx = bi2;
             }
         }
@@ -1863,54 +1638,20 @@
         results.forEach(function(R, ri) {
             var cls = (ri === bestIdx) ? 'bt-best' : '';
             if (R.id === 'CUR') { cls += ' bt-cur'; }
-            if (R.id === 'F' || R.id === 'E2') { cls += ' bt-blitz'; }
-            
-            var modeTag = R.cfg.killMode === 'blindOnly' 
-                ? '<span class="mode-badge mb-blind">盲區反選' + (R.cfg.strictBlind ? '-嚴格' : '') + '</span>' 
-                : '<span class="mode-badge mb-score">評分制</span>';
-            
             var applyBtn = '';
-            if (R.id !== 'CUR') {
-                applyBtn = '<button class="btn-apply" onclick="applyStrategy(\'' + R.id + '\')">一鍵應用</button>';
-            }
-
-            rows += '<tr class="' + cls + '">' +
-                '<td class="left">' + R.name + modeTag + applyBtn + '</td>' +
-                '<td>' + R.res.perfectKills + '/' + R.res.totalTested + '</td>' +
-                '<td><strong>' + R.res.perfectRate.toFixed(1) + '%</strong></td>' +
-                '<td>' + R.res.avgHits.toFixed(2) + '</td>' +
-                '<td>' + R.res.maxLossStreak + '</td>' +
-            '</tr>';
+            if (R.id !== 'CUR') { applyBtn = '<button class="btn-apply" onclick="applyStrategy(\'' + R.id + '\')">一鍵應用</button>'; }
+            rows += '<tr class="' + cls + '"><td class="left">' + R.name + applyBtn + '</td><td>' + R.res.perfectKills + '/' + R.res.totalTested + '</td><td><strong>' + R.res.perfectRate.toFixed(1) + '%</strong></td><td>' + R.res.avgHits.toFixed(2) + '</td><td>' + R.res.maxLossStreak + '</td></tr>';
         });
 
         var curRes = results.find(function(x) { return x.id === 'CUR'; }) || results[0];
-        var detailHtml = 
-            '<div class="detail-box">' +
-                '<details>' +
-                    '<summary class="detail-summary">' +
-                        '<span>📝 查看【' + curRes.name + '】每期明細 (最新在上)</span>' +
-                        '<span style="font-size:12px; color:var(--text-muted); font-weight:normal;">點擊展開</span>' +
-                    '</summary>' +
-                    '<div class="detail-content">' +
-                        curRes.res.detailLogs.slice().reverse().join('<br>') +
-                    '</div>' +
-                '</details>' +
-            '</div>';
+        var detailHtml = '<div class="detail-box"><details><summary class="detail-summary"><span>📝 查看【' + curRes.name + '】每期明細 (最新在上)</span><span style="font-size:12px; color:#888; font-weight:normal;">點擊展開</span></summary><div class="detail-content">' + curRes.res.detailLogs.slice().reverse().join('<br>') + '</div></details></div>';
 
         var bestR = results[bestIdx].res;
-        var resBox = document.getElementById('backtestBox');
-        resBox.style.display = 'block';
-        document.getElementById('backtestContent').innerHTML = 
-            '<div style="margin-bottom:10px; font-size:14px;"><strong>雙模式對比回測 ' + actualPeriods + ' 期（每期殺 ' + killCount + ' 碼）</strong>｜評分制 vs 盲區反選制</div>' +
-            '<table class="bt-table">' +
-                '<tr><th>策略</th><th>特碼全殺</th><th>勝率</th><th>平均殺錯</th><th>最大連黑</th></tr>' +
-                rows +
-            '</table>' +
-            '<div style="margin-top:10px; padding:10px; background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.2); border-radius:6px; font-size:13px;">' +
-                '🏆 <strong>最優策略：' + results[bestIdx].name + '</strong>（特碼全殺勝率 ' + bestR.perfectRate.toFixed(1) + '%）' +
-                (results[bestIdx].id !== 'CUR' ? '。請點擊表格中的「一鍵應用」切換至該參數。' : '。當前參數已是最優！') +
-            '</div>' +
-            detailHtml;
+        document.getElementById('backtestBox').style.display = 'block';
+        document.getElementById('backtestContent').innerHTML =
+            '<div style="margin-bottom:10px; font-size:14px;"><strong>共回測 ' + actualPeriods + ' 期 (' + (isSpecialMode ? '特码杀号，杀' + killCount + '码' : '平码杀号') + ')</strong></div>' +
+            '<table class="bt-table"><tr><th>策略</th><th>全殺次數</th><th>勝率</th><th>平均殺錯</th><th>最大連黑</th></tr>' + rows + '</table>' +
+            '<div style="margin-top:10px; padding:10px; background:#e8f5e9; border-radius:6px; font-size:13px;">🏆 <strong>最優策略：' + results[bestIdx].name + '</strong>（勝率 ' + bestR.perfectRate.toFixed(1) + '%）' + (results[bestIdx].id !== 'CUR' ? '。請點擊「一鍵應用」切換。' : '。當前參數已最優！') + '</div>' + detailHtml;
 
         var curStrategyResult = results.find(function(x) { return x.id === 'CUR'; });
         if (curStrategyResult) {
@@ -1919,236 +1660,288 @@
             currentWinRateInfo.maxLossStreak = curStrategyResult.res.maxLossStreak;
             currentWinRateInfo.perfectKills = curStrategyResult.res.perfectKills;
             currentWinRateInfo.totalTested = curStrategyResult.res.totalTested;
-            currentWinRateInfo.source = "當前配置雙模式回測 (" + actualPeriods + "期，殺" + killCount + "碼)";
+            currentWinRateInfo.source = "當前配置回測 (" + actualPeriods + "期)";
         }
-            
         window._currentStrategies = {};
         results.forEach(function(r) { window._currentStrategies[r.id] = r; });
     }
 
-    function runAIGridSearch() {
-        if(historyData.length < 20) { alert("至少需要 20 期記錄才能進行尋優！"); return; }
+    /* ========== AI 寻优 ========== */
+    function combTypes(arr, k) {
+        var result = [];
+        function comb(start, cur) {
+            if (cur.length === k) { result.push(cur.slice()); return; }
+            for (var i = start; i < arr.length; i++) {
+                cur.push(arr[i]);
+                comb(i + 1, cur);
+                cur.pop();
+            }
+        }
+        comb(0, []);
+        return result;
+    }
+
+    async function runAIGridSearch() {
+        if (historyData.length < 20) { alert("至少需要 20 期記錄！（請先雲端同步）"); return; }
         var backtestPeriods = parseInt(document.getElementById('backtestPeriods').value);
         var actualPeriods = Math.min(backtestPeriods, historyData.length - 1);
         var startIndex = historyData.length - 1 - actualPeriods;
-        var allCheckedTypes = Array.from(document.querySelectorAll('.chart-type:checked')).map(function(cb) { return cb.value; });
-        if (allCheckedTypes.length === 0) { alert("請至少勾選一種排盤模式用於回測！"); return; }
+        var currentSelectedTypes = Array.from(document.querySelectorAll('.chart-type:checked')).map(function(cb) { return cb.value; });
+        if (currentSelectedTypes.length === 0) { alert("請至少勾選一種排盤模式！"); return; }
         var modeVal = document.getElementById('modInput').value;
-        var globalKillCount = getKillCount();
+        
+        var isSpecialMode = (currentKillMode === 'special');
+        var killCount = 5;
+        if (isSpecialMode) { killCount = parseInt(document.getElementById('specialKillCount').value); }
 
-        var minComb = parseInt(document.getElementById('minChartCount').value) || 2;
-        var maxComb = parseInt(document.getElementById('maxChartCount').value) || 5;
-        if (minComb < 1) { minComb = 1; }
-        if (maxComb > allCheckedTypes.length) { maxComb = allCheckedTypes.length; }
-        if (minComb > maxComb) { minComb = maxComb; }
+        var minCombo = parseInt(document.getElementById('aiComboMin').value) || 1;
+        var maxCombo = parseInt(document.getElementById('aiComboMax').value) || 7;
+        if (minCombo > maxCombo) { var tmp = minCombo; minCombo = maxCombo; maxCombo = tmp; }
 
-        var resBox = document.getElementById('backtestBox');
-        resBox.style.display = 'block';
+        var rawCombos = [];
+        for (var k = minCombo; k <= maxCombo; k++) {
+            rawCombos = rawCombos.concat(combTypes(currentSelectedTypes, k));
+        }
+        
+        if (rawCombos.length > 20) {
+            var shuffled = rawCombos.sort(function() { return 0.5 - Math.random(); });
+            rawCombos = shuffled.slice(0, 20);
+            var fullKey = currentSelectedTypes.slice().sort().join(',');
+            if (!rawCombos.some(function(c) { return c.slice().sort().join(',') === fullKey; })) {
+                rawCombos.push(currentSelectedTypes.slice());
+            }
+        }
+
+        document.getElementById('backtestBox').style.display = 'block';
         document.getElementById('backtestContent').innerHTML =
-            '<div style="text-align:center; padding:20px; font-weight:bold; color:var(--warning-neon);">🧬 全自動多圖組合尋優啟動中（圖數 ' + minComb + '~' + maxComb + '，會先掃描組合，再進行基因尋優，約需 1-2 秒）...</div>';
+            '<div class="ai-loader-container">' +
+                '<div class="ai-loader-header">' +
+                    '<span class="ai-dot blink"></span>' +
+                    '<span class="ai-dot blink" style="animation-delay:0.3s"></span>' +
+                    '<span class="ai-dot blink" style="animation-delay:0.6s"></span>' +
+                    '<span class="ai-title">AI 基因尋優引擎 v4.0 運行中...</span>' +
+                '</div>' +
+                '<div class="ai-loader-body">' +
+                    '<div class="ai-log" id="aiLog">> 正在遍歷組合區間 [' + minCombo + '~' + maxCombo + '] 張...\n> 初始化基因種群...\n> 開始進化運算 (' + (isSpecialMode ? '特码杀' + killCount + '码' : '平码杀') + ')...</div>' +
+                    '<div class="ai-progress-wrap"><div class="ai-progress-bar" id="aiProgressBar" style="width: 0%;"></div></div>' +
+                    '<div class="ai-stats">' +
+                        '<span>已評估次數: <b id="aiTestedCount">0</b></span>' +
+                        '<span>目前最優勝率: <b id="aiBestRate" style="color:#fbbf24">--%</b></span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="ai-loader-scanline"></div>' +
+            '</div>';
 
-        setTimeout(function() {
-            _cache = { heat: {}, cov: {}, sheat: {}, smiss: {} };
-            
-            var typeCombinations = [];
-            function getCombinations(arr, size) {
-                var result = [];
-                function combine(start, current) {
-                    if (current.length === size) { result.push(current.slice()); return; }
-                    for (var i = start; i < arr.length; i++) {
-                        current.push(arr[i]);
-                        combine(i + 1, current);
-                        current.pop();
-                    }
-                }
-                combine(0, []);
-                return result;
-            }
-            
-            for (var sz = minComb; sz <= maxComb; sz++) {
-                typeCombinations = typeCombinations.concat(getCombinations(allCheckedTypes, sz));
-            }
-            if (typeCombinations.length === 0) {
-                typeCombinations = [allCheckedTypes];
-            }
+        await new Promise(r => setTimeout(r, 100));
 
-            var quickResults = [];
-            typeCombinations.forEach(function(types) {
-                var r = runOneStrategyBacktest(getFilterConfig(), startIndex, historyData.length - 1, types, modeVal);
-                if (r) {
-                    quickResults.push({ types: types, rate: r.perfectRate, res: r });
-                }
-            });
-            quickResults.sort(function(a, b) { return b.rate - a.rate; });
-            var top5Types = quickResults.slice(0, 5).map(function(x) { return x.types; });
+        _cache = { heat: {}, cov: {} };
+        var allResults = [];
+        var testedCount = 0;
+        var POP_SIZE = 20;
+        var GENERATIONS = 6; 
+        var maxBestRate = 0;
 
-            var allResults = [];
-            var testedCount = 0;
-            var POP_SIZE = 30;
-            var GENERATIONS = 8;
+        var aiLogEl = document.getElementById('aiLog');
+        var aiProgressEl = document.getElementById('aiProgressBar');
+        var aiTestedEl = document.getElementById('aiTestedCount');
+        var aiBestEl = document.getElementById('aiBestRate');
 
-            top5Types.forEach(function(testTypes) {
-                var population = [];
-                for (var i = 0; i < POP_SIZE; i++) {
-                    population.push({
-                        blind: Math.floor(Math.random() * 30) + 50,
-                        heatW: Math.floor(Math.random() * 7) + 4,
-                        colorW: Math.random() > 0.5 ? 20 : 0,
-                        missW: Math.random() > 0.5 ? Math.floor(Math.random() * 30) + 20 : 0,
-                        streakW: Math.random() > 0.5 ? 1 : 0,
-                        isolatedW: testTypes.indexOf('E') !== -1 ? 150 : 0,
-                        combo: Math.random() > 0.6,
-                        neighborW: Math.random() > 0.6 ? 35 : 0,
-                        tailW: Math.random() > 0.6 ? 12 : 0,
-                        longHeatW: Math.random() > 0.7 ? 10 : 0,
-                        hotProtectW: Math.random() > 0.7 ? 80 : 0,
-                        excludePrev: false,
-                        killCount: globalKillCount,
-                        killMode: Math.random() > 0.5 ? 'score' : 'blindOnly',
-                        strictBlind: Math.random() > 0.5
-                    });
-                }
-
-                for (var gen = 0; gen < GENERATIONS; gen++) {
-                    population.forEach(function(cfg) {
-                        var r = runOneStrategyBacktest(cfg, startIndex, historyData.length - 1, testTypes, modeVal);
-                        if (r) {
-                            testedCount++;
-                            cfg._res = r;
-                            cfg._score = calcStabilityScore(r);
-                            allResults.push({ cfg: JSON.parse(JSON.stringify(cfg)), types: testTypes, res: r, stability: cfg._score });
-                        } else {
-                            cfg._score = -9999;
-                        }
-                    });
-
-                    population.sort(function(a, b) { return b._score - a._score; });
-                    var nextGen = population.slice(0, 10);
-
-                    while (nextGen.length < POP_SIZE) {
-                        var p1 = population[Math.floor(Math.random() * 10)];
-                        var p2 = population[Math.floor(Math.random() * 10)];
-                        var child = {
-                            blind: Math.random() > 0.5 ? p1.blind : p2.blind,
-                            heatW: Math.random() > 0.5 ? p1.heatW : p2.heatW,
-                            colorW: Math.random() > 0.5 ? p1.colorW : p2.colorW,
-                            missW: Math.random() > 0.5 ? p1.missW : p2.missW,
-                            streakW: Math.random() > 0.5 ? p1.streakW : p2.streakW,
-                            isolatedW: Math.random() > 0.5 ? p1.isolatedW : p2.isolatedW,
-                            combo: Math.random() > 0.5 ? p1.combo : p2.combo,
-                            neighborW: Math.random() > 0.5 ? p1.neighborW : p2.neighborW,
-                            tailW: Math.random() > 0.5 ? p1.tailW : p2.tailW,
-                            longHeatW: Math.random() > 0.5 ? p1.longHeatW : p2.longHeatW,
-                            hotProtectW: Math.random() > 0.5 ? p1.hotProtectW : p2.hotProtectW,
-                            excludePrev: false,
-                            killCount: globalKillCount,
-                            killMode: Math.random() > 0.5 ? p1.killMode : p2.killMode,
-                            strictBlind: Math.random() > 0.5 ? p1.strictBlind : p2.strictBlind
-                        };
-                        if (Math.random() > 0.8) { child.blind = Math.floor(Math.random() * 30) + 50; }
-                        if (Math.random() > 0.8) { child.heatW = Math.floor(Math.random() * 7) + 4; }
-                        if (Math.random() > 0.8) { child.missW = Math.random() > 0.5 ? Math.floor(Math.random() * 30) + 20 : 0; }
-                        if (Math.random() > 0.85) { child.killMode = Math.random() > 0.5 ? 'score' : 'blindOnly'; }
-                        nextGen.push(child);
-                    }
-                    population = nextGen;
-                }
-            });
-
-            allResults.sort(function(a, b) {
-                if (b.stability !== a.stability) { return b.stability - a.stability; }
-                if (b.res.perfectRate !== a.res.perfectRate) { return b.res.perfectRate - a.res.perfectRate; }
-                return a.res.avgHits - b.res.avgHits;
-            });
-
-            var topConfigs = [];
-            allResults.forEach(function(item) {
-                if (topConfigs.length >= 3) { return; }
-                var dup = topConfigs.some(function(t) {
-                    return t.cfg.killMode === item.cfg.killMode &&
-                           t.cfg.strictBlind === item.cfg.strictBlind &&
-                           Math.abs(t.cfg.blind - item.cfg.blind) < 5 && 
-                           t.types.join() === item.types.join();
+        for (var cIdx = 0; cIdx < rawCombos.length; cIdx++) {
+            var testTypes = rawCombos[cIdx];
+            var population = [];
+            for (var i = 0; i < POP_SIZE; i++) {
+                population.push({
+                    blind: Math.floor(Math.random() * 30) + 50,
+                    heatW: Math.floor(Math.random() * 7) + 5,
+                    colorW: Math.random() > 0.5 ? 30 : 0,
+                    missW: Math.random() > 0.5 ? Math.floor(Math.random() * 40) + 30 : 0,
+                    streakW: Math.random() > 0.5 ? 1 : 0,
+                    isolatedW: testTypes.indexOf('E') !== -1 ? 150 : 0,
+                    combo: Math.random() > 0.5,
+                    neighborW: Math.random() > 0.6 ? 45 : 0,
+                    tailW: Math.random() > 0.6 ? 18 : 0,
+                    longHeatW: Math.random() > 0.7 ? 15 : 0,
+                    hotProtectW: Math.random() > 0.7 ? 100 : 0,
+                    excludePrev: false
                 });
-                if (!dup) { topConfigs.push(item); }
-            });
-
-            if (topConfigs.length === 0) {
-                document.getElementById('backtestContent').innerHTML = '<div style="color:var(--danger-neon);">尋優失敗，請檢查歷史數據是否含特碼。</div>';
-                return;
             }
+            
+            for (var gen = 0; gen < GENERATIONS; gen++) {
+                for (var pIdx = 0; pIdx < population.length; pIdx++) {
+                    var cfg = population[pIdx];
+                    var r = runOneStrategyBacktest(cfg, startIndex, historyData.length - 1, testTypes, modeVal, isSpecialMode, killCount);
+                    
+                    if (r) {
+                        testedCount++;
+                        cfg._res = r;
+                        cfg._score = calcStabilityScore(r);
+                        allResults.push({ cfg: JSON.parse(JSON.stringify(cfg)), types: testTypes.slice(), res: r, stability: cfg._score });
+                        
+                        if (r.perfectRate > maxBestRate) {
+                            maxBestRate = r.perfectRate;
+                        }
+                    } else { cfg._score = -9999; }
+                    
+                    if (testedCount % 30 === 0) {
+                        aiTestedEl.innerText = testedCount;
+                        aiBestEl.innerText = maxBestRate.toFixed(1) + '%';
+                        aiProgressEl.style.width = Math.min(95, (testedCount / (rawCombos.length * POP_SIZE * GENERATIONS) * 100)) + '%';
+                        
+                        var logs = [
+                            '> 評估染色體組合，交叉變異中...',
+                            '> 發現高適應度解，記錄中...',
+                            '> 基因池重組，剔除劣質參數...',
+                            '> 計算特徵覆蓋率與止損率...'
+                        ];
+                        aiLogEl.innerHTML = logs[Math.floor(testedCount / 30) % logs.length] + '<br>> 已掃描: ' + testedCount + ' 次組合';
+                        
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                }
+                
+                population.sort(function(a, b) { return b._score - a._score; });
+                var nextGen = population.slice(0, 10);
+                while (nextGen.length < POP_SIZE) {
+                    var p1 = population[Math.floor(Math.random() * 10)];
+                    var p2 = population[Math.floor(Math.random() * 10)];
+                    var child = {};
+                    ['blind', 'heatW', 'colorW', 'missW', 'streakW', 'isolatedW', 'combo', 'neighborW', 'tailW', 'longHeatW', 'hotProtectW'].forEach(function(k) {
+                        child[k] = Math.random() > 0.5 ? p1[k] : p2[k];
+                    });
+                    child.excludePrev = false;
+                    if (Math.random() > 0.8) { child.blind = Math.floor(Math.random() * 30) + 50; }
+                    if (Math.random() > 0.8) { child.heatW = Math.floor(Math.random() * 7) + 5; }
+                    if (Math.random() > 0.8) { child.missW = Math.random() > 0.5 ? Math.floor(Math.random() * 40) + 30 : 0; }
+                    nextGen.push(child);
+                }
+                population = nextGen;
+            }
+        }
 
-            var best = topConfigs[0];
-            localStorage.setItem('gann_ai_best', JSON.stringify({ cfg: best.cfg, types: best.types }));
-            aiBestConfig = { cfg: best.cfg, types: best.types };
+        allResults.sort(function(a, b) {
+            if (b.stability !== a.stability) { return b.stability - a.stability; }
+            if (b.res.perfectRate !== a.res.perfectRate) { return b.res.perfectRate - a.res.perfectRate; }
+            return a.res.avgHits - b.res.avgHits;
+        });
 
-            currentWinRateInfo.topConfigs = topConfigs;
-            currentWinRateInfo.perfectRate = best.res.perfectRate;
-            currentWinRateInfo.avgHits = best.res.avgHits;
-            currentWinRateInfo.maxLossStreak = best.res.maxLossStreak;
-            currentWinRateInfo.perfectKills = best.res.perfectKills;
-            currentWinRateInfo.totalTested = best.res.totalTested;
-            currentWinRateInfo.source = "全自動多圖基因尋優 (" + testedCount + " 種組合，殺" + globalKillCount + "碼)";
+        var topConfigs = [];
+        allResults.forEach(function(item) {
+            if (topConfigs.length >= 3) { return; }
+            var dup = topConfigs.some(function(t) {
+                return Math.abs(t.cfg.blind - item.cfg.blind) < 5 && t.types.slice().sort().join() === item.types.slice().sort().join();
+            });
+            if (!dup) { topConfigs.push(item); }
+        });
 
-            var removedTypes = allCheckedTypes.filter(function(t) { return best.types.indexOf(t) === -1; });
-            var recommendHtml = removedTypes.length > 0
-                ? '<div style="color:var(--danger-neon); margin-top:5px;">🚫 <b>AI 建議剔除：</b> 圖 ' + removedTypes.join(', 圖 ') + '</div>'
-                : '<div style="color:var(--success-neon); margin-top:5px;">✅ 當前圖陣組合已是最優。</div>';
+        if (topConfigs.length === 0) {
+            document.getElementById('backtestContent').innerHTML = '<div style="color:red;">尋優失敗，請檢查歷史數據。</div>';
+            return;
+        }
 
-            var detailHtml =
-                '<div class="detail-box"><details><summary class="detail-summary">' +
-                    '<span>📝 查看 AI 最優解 每期明細</span>' +
-                    '<span style="font-size:12px; color:var(--text-muted); font-weight:normal;">點擊展開</span>' +
-                '</summary><div class="detail-content">' +
-                    best.res.detailLogs.slice().reverse().join('<br>') +
-                '</div></details></div>';
+        var best = topConfigs[0];
+        
+        var localBest = JSON.parse(JSON.stringify(best));
+        var improved = true;
+        var loopGuard = 0;
+        while(improved && loopGuard < 2) {
+            improved = false;
+            loopGuard++;
+            var testCfgs = [];
+            [localBest.cfg.blind-2, localBest.cfg.blind+2].forEach(function(v) {
+                if(v>=10 && v<=100) { var c = JSON.parse(JSON.stringify(localBest.cfg)); c.blind = v; testCfgs.push({cfg:c, types:localBest.types}); }
+            });
+            [localBest.cfg.heatW-1, localBest.cfg.heatW+1].forEach(function(v) {
+                if(v>=0 && v<=20) { var c = JSON.parse(JSON.stringify(localBest.cfg)); c.heatW = v; testCfgs.push({cfg:c, types:localBest.types}); }
+            });
+            for(var tIdx=0; tIdx<testCfgs.length; tIdx++){
+                var tc = testCfgs[tIdx];
+                var r = runOneStrategyBacktest(tc.cfg, startIndex, historyData.length - 1, tc.types, modeVal, isSpecialMode, killCount);
+                if (r) {
+                    var score = calcStabilityScore(r);
+                    if (score > localBest.stability) {
+                        localBest = { cfg: tc.cfg, types: tc.types, res: r, stability: score };
+                        improved = true;
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+        }
+        if (localBest.stability > best.stability) {
+            topConfigs.unshift(localBest);
+            topConfigs = topConfigs.slice(0, 3);
+            best = localBest;
+        }
 
-            var modeLabel = best.cfg.killMode === 'blindOnly' ? '盲區反選制' : '綜合評分制';
-            var strictLabel = best.cfg.strictBlind ? '（嚴格）' : '';
+        aiProgressEl.style.width = '100%';
+        await new Promise(r => setTimeout(r, 300));
 
-            var optHtml =
-                '<div style="margin-bottom:10px; font-size:14px; color:var(--warning-neon); font-weight:bold;">🧬 全自動多圖基因尋優完成！共評估 ' +
-                    testedCount + ' 種組合，取得 Top-' + topConfigs.length + ' 最優配置（殺 ' + globalKillCount + ' 碼）。</div>' +
-                '<table class="bt-table">' +
-                    '<tr><th>AI 最優解</th><th>特碼全殺</th><th>勝率</th><th>平均殺錯</th><th>最大連黑</th></tr>' +
-                    '<tr class="bt-best"><td class="left">🤖 歷史最優配置（' + modeLabel + strictLabel + '）<br>' +
-                        '<button class="btn-apply" onclick="applyStrategy(\'AI\')">一鍵應用該配置</button></td>' +
-                        '<td>' + best.res.perfectKills + '/' + best.res.totalTested + '</td>' +
-                        '<td><strong>' + best.res.perfectRate.toFixed(1) + '%</strong></td>' +
-                        '<td>' + best.res.avgHits.toFixed(2) + '</td>' +
-                        '<td>' + best.res.maxLossStreak + '</td></tr>' +
-                '</table>' +
-                '<div style="margin-top:10px; padding:10px; background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.2); border-radius:6px; font-size:13px;">' +
-                    '🏆 <strong>AI 智能建議（特別號殺號）：</strong><br>' +
-                    '<b>• 推薦模式：</b> ' + modeLabel + strictLabel + '<br>' +
-                    '<b>• 推薦圖陣：</b> 圖 ' + best.types.join(', 圖 ') + '<br>' + recommendHtml +
-                    '<b>• 盲區加分：</b> ' + best.cfg.blind + ' ｜ <b>特碼短線冷熱：</b> ' + best.cfg.heatW + '<br>' +
-                    '<b>• 遺漏防爆冷：</b> ' + (best.cfg.missW > 0 ? '開啟 ('+best.cfg.missW+')' : '關閉') +
-                    ' ｜ <b>連黑止損：</b> ' + (best.cfg.streakW > 0 ? '開啟' : '關閉') + '<br>' +
-                    '<b>• 波色/圖E/組合：</b> ' + (best.cfg.colorW > 0 ? '開' : '關') + '/' + (best.cfg.isolatedW > 0 ? '開' : '關') + '/' + (best.cfg.combo ? '開' : '關') +
-                    '<br><span style="color:var(--primary-neon); font-weight:bold; margin-top:5px; display:block;">' +
-                    '💾 已保存 Top-' + topConfigs.length + ' 最優配置，本期特碼殺號將自動投票！</span>' +
-                '</div>' + detailHtml;
+        localStorage.setItem('gann_ai_best', JSON.stringify({ cfg: best.cfg, types: best.types }));
+        aiBestConfig = { cfg: best.cfg, types: best.types };
+        currentWinRateInfo.topConfigs = topConfigs;
+        currentWinRateInfo.perfectRate = best.res.perfectRate;
+        currentWinRateInfo.avgHits = best.res.avgHits;
+        currentWinRateInfo.maxLossStreak = best.res.maxLossStreak;
+        currentWinRateInfo.perfectKills = best.res.perfectKills;
+        currentWinRateInfo.totalTested = best.res.totalTested;
+        currentWinRateInfo.source = "基因尋優 (" + testedCount + " 組合)";
 
-            document.getElementById('backtestContent').innerHTML = optHtml;
-            window._currentStrategies = { 'AI': { cfg: best.cfg, customTypes: best.types } };
-        }, 50);
+        var removedTypes = currentSelectedTypes.filter(function(t) { return best.types.indexOf(t) === -1; });
+        var recommendHtml = removedTypes.length > 0
+            ? '<div style="color:#d32f2f; margin-top:5px;">🚫 <b>AI 建議剔除：</b> 圖 ' + removedTypes.join(', 圖 ') + '</div>'
+            : '<div style="color:#2e7d32; margin-top:5px;">✅ 當前圖陣組合已是最優。</div>';
+
+        var detailHtml = '<div class="detail-box"><details><summary class="detail-summary"><span>📝 查看 AI 最優解 每期明細</span><span style="font-size:12px; color:#888; font-weight:normal;">點擊展開</span></summary><div class="detail-content">' + best.res.detailLogs.slice().reverse().join('<br>') + '</div></details></div>';
+
+        var optHtml =
+            '<div style="margin-bottom:10px; font-size:14px; color:#d32f2f; font-weight:bold;">🧬 尋優完成！區間 ' + minCombo + '~' + maxCombo + ' 張，共評估 ' + testedCount + ' 次，取得 Top-' + topConfigs.length + '。</div>' +
+            '<table class="bt-table"><tr><th>AI 最優解</th><th>全殺次數</th><th>勝率</th><th>平均殺錯</th><th>最大連黑</th></tr>' +
+            '<tr class="bt-best"><td class="left">🤖 歷史最優配置<br><button class="btn-apply" onclick="applyStrategy(\'AI\')">一鍵應用該配置</button></td>' +
+            '<td>' + best.res.perfectKills + '/' + best.res.totalTested + '</td>' +
+            '<td><strong>' + best.res.perfectRate.toFixed(1) + '%</strong></td>' +
+            '<td>' + best.res.avgHits.toFixed(2) + '</td>' +
+            '<td>' + best.res.maxLossStreak + '</td></tr></table>' +
+            '<div style="margin-top:10px; padding:10px; background:#e8f5e9; border-radius:6px; font-size:13px;">' +
+                '🏆 <strong>AI 智能建議：</strong><br>' +
+                '<b>• 推薦圖陣：</b> 圖 ' + best.types.join(', 圖 ') + '<br>' + recommendHtml +
+                '<b>• 盲區加分：</b> ' + best.cfg.blind + ' ｜ <b>短線冷熱：</b> ' + best.cfg.heatW + '<br>' +
+                '<b>• 遺漏防爆冷：</b> ' + (best.cfg.missW > 0 ? '開啟 (' + best.cfg.missW + ')' : '關閉') + ' ｜ <b>連黑止損：</b> ' + (best.cfg.streakW > 0 ? '開啟' : '關閉') + '<br>' +
+                '<b>• 波色/圖E/組合：</b> ' + (best.cfg.colorW > 0 ? '開' : '關') + '/' + (best.cfg.isolatedW > 0 ? '開' : '關') + '/' + (best.cfg.combo ? '開' : '關') +
+                '<br><span style="color:#1976d2; font-weight:bold; margin-top:5px; display:block;">✅ 已自動應用該配置，下方殺號已更新！</span>' +
+            '</div>' + detailHtml;
+
+        window._currentStrategies = { 'AI': { cfg: best.cfg, customTypes: best.types } };
+
+        setFilterConfig(best.cfg);
+        document.querySelectorAll('.chart-type').forEach(function(cb) {
+            cb.checked = (best.types.indexOf(cb.value) !== -1);
+        });
+        generateAnalysis();
+
+        document.getElementById('backtestBox').style.display = 'block';
+        document.getElementById('backtestContent').innerHTML = optHtml;
+        document.getElementById('backtestBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function applyStrategy(id) {
         if (!window._currentStrategies || !window._currentStrategies[id]) { return; }
-        
         var strategy = window._currentStrategies[id];
-        var cfg = strategy.cfg || strategy; 
+        var cfg = strategy.cfg || strategy;
         var types = strategy.customTypes || strategy.types || null;
-
         if (types) {
             document.querySelectorAll('.chart-type').forEach(function(cb) {
                 cb.checked = (types.indexOf(cb.value) !== -1);
             });
         }
         setFilterConfig(cfg);
+        generateAnalysis();
+        showToast('✅ 已應用該策略參數');
     }
+
+    window.onload = function() {
+        restoreVip();
+        applyVipUI();
+        generateAnalysis();
+    };
 </script>
 </body>
 </html>
