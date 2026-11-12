@@ -1883,7 +1883,7 @@
         currentWinRateInfo.maxLossStreak = best.res.maxLossStreak;
         currentWinRateInfo.perfectKills = best.res.perfectKills;
         currentWinRateInfo.totalTested = best.res.totalTested;
-        currentWinRateInfo.source = "基因尋優 (" + testedCount + " 組合)";
+        currentWinRateInfo.source = "基因智能尋優 (" + testedCount + " 組合)";
 
         var removedTypes = currentSelectedTypes.filter(function(t) { return best.types.indexOf(t) === -1; });
         var recommendHtml = removedTypes.length > 0
